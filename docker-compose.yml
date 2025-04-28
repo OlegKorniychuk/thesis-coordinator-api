@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: thesis-coordinator-pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: thesis_coordinator_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - thesis_coordinator_network
+
+volumes:
+  db_data:
+
+networks:
+  thesis_coordinator_network:

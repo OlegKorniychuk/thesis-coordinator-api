@@ -1,0 +1,49 @@
+{
+  "name": "thesis-coordinator-api",
+  "version": "1.0.0",
+  "description": "API for my bachelors thesis project",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OlegKorniychuk/thesis-coordinator-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/OlegKorniychuk/thesis-coordinator-api/issues"
+  },
+  "homepage": "https://github.com/OlegKorniychuk/thesis-coordinator-api#readme",
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.15.2",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "eslint-plugin-security": "^3.0.1",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "prettier-eslint": "^16.4.1",
+    "prisma": "^6.6.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.6.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0"
+  }
+}

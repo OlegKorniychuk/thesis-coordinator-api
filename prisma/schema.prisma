@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+
+enum UserRole {
+  admin
+  bachelor
+  supervisor
+}
+
+enum DiplomaCyclePhase {
+  preparation
+  supervisor_selection
+  topic_selection
+  post_cycle
+}
+
+enum SupervisionRequestStatus {
+  pending
+  rejected
+  accepted
+}
+
+enum TopicStatus {
+  pending
+  rejected
+  on_confirmation
+  confirmed
+}
+
+// Models
+
+model User {
+  user_id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  login             String
+  password          String
+  role              UserRole
+  diploma_cycle_id  String?  @db.Uuid
+  diploma_cycle     DiplomaCycle? @relation(fields: [diploma_cycle_id], references: [diploma_cycle_id], onDelete: Cascade)
+  bachelor          Bachelor?
+  supervisor        Supervisor?
+}
+
+model Student {
+  student_id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name        String
+  second_name       String
+  last_name         String
+  group             String
+  specialty         String
+  academic_program  String
+
+  bachelor          Bachelor?
+}
+
+model Teacher {
+  teacher_id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name        String
+  second_name       String
+  last_name         String
+  academic_degree   String
+  position          String
+
+  supervisor        Supervisor?
+}
+
+model Bachelor {
+  bachelor_id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student_id            String   @db.Uuid @unique
+  user_id               String   @db.Uuid @unique
+  supervisor_id         String?  @db.Uuid
+
+  student               Student  @relation(fields: [student_id], references: [student_id], onDelete: Restrict)
+  user                  User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  supervisor            Supervisor? @relation(fields: [supervisor_id], references: [supervisor_id], onDelete: Restrict)
+  supervision_requests  SupervisionRequest[]
+  topic                 Topic?
+}
+
+model Supervisor {
+  supervisor_id     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teacher_id        String   @db.Uuid @unique
+  user_id           String   @db.Uuid @unique
+  max_load          Int
+
+  teacher              Teacher  @relation(fields: [teacher_id], references: [teacher_id], onDelete: Restrict)
+  user                 User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  bachelors            Bachelor[]
+  supervisors_info     SupervisorsInfo?
+  supervision_requests SupervisionRequest[]
+}
+
+model DiplomaCycle {
+  diploma_cycle_id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year                          Int
+  start_date                    DateTime?
+  supervisor_selection_end_date DateTime?
+  topic_selection_end_date      DateTime?
+  current_phase                 DiplomaCyclePhase   @default(preparation)
+  is_active                     Boolean  @default(true)
+
+  users                         User[]
+}
+
+model SupervisorsInfo {
+  supervisor_info_id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  supervisor_id          String  @db.Uuid @unique
+  comment                String?
+  accept_with_topic_only Boolean
+
+  supervisor             Supervisor @relation(fields: [supervisor_id], references: [supervisor_id], onDelete: Cascade)
+}
+
+model SupervisionRequest {
+  supervision_request_id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bachelor_id            String @db.Uuid
+  supervisor_id          String @db.Uuid
+  comment                String?
+  proposed_topic         String
+  status                 SupervisionRequestStatus @default(pending)
+
+  bachelor               Bachelor @relation(fields: [bachelor_id], references: [bachelor_id], onDelete: Cascade)
+  supervisor             Supervisor @relation(fields: [supervisor_id], references: [supervisor_id], onDelete: Cascade)
+}
+
+model Topic {
+  topic_id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bachelor_id        String  @db.Uuid @unique
+  name               String
+  description        String?
+  status             TopicStatus  @default(pending)
+
+  bachelor           Bachelor @relation(fields: [bachelor_id], references: [bachelor_id], onDelete: Cascade)
+}
+
+model ArchivedBachelor {
+  archived_bachelor_id  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  year                  Int
+  full_name             String
+  group                 String
+  topic                 String
+  specialty             String
+  academic_program      String
+  supervisor_full_name  String
+  supervisor_degree     String
+  supervisor_position   String
+}
