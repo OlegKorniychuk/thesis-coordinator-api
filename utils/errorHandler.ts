@@ -14,7 +14,7 @@ export const errorHandler = (
     });
     return;
   }
-
+  console.log(err);
   res.status(500).json({
     status: 'error',
     message: 'Server error'

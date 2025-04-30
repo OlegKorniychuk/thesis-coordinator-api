@@ -4,7 +4,7 @@ import {Request, Response, NextFunction} from 'express';
 import teacherService from 'services/teacher/teacher.service';
 import {ValidateCreateTeacher} from 'services/teacher/teacher.validate';
 
-const addTeacher = catchError(
+const createTeacher = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const data = ValidateCreateTeacher.parse(req.body);
     const newTeacher: Teacher = await teacherService.createTeacher(data);
@@ -35,4 +35,4 @@ const getTeachers = catchError(
   }
 );
 
-export {addTeacher, getTeachers};
+export {createTeacher, getTeachers};

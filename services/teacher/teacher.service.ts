@@ -16,6 +16,14 @@ class TeacherService {
 
     return await prisma.teacher.findMany({skip, take});
   }
+
+  public async getTeacherById(id: string): Promise<Teacher | null> {
+    return await prisma.teacher.findUnique({
+      where: {
+        teacher_id: id
+      }
+    });
+  }
 }
 
 export default new TeacherService();

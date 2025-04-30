@@ -3,6 +3,6 @@ import express from 'express';
 
 const router = express.Router();
 
-router.route('/').post(teacherController.addTeacher).get(teacherController.getTeachers);
+router.route('/').post(teacherController.createTeacher).get(teacherController.getTeachers);
 
 export default router;
