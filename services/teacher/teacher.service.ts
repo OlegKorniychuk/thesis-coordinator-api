@@ -6,8 +6,15 @@ class TeacherService {
     return await prisma.teacher.create({data: data});
   }
 
-  public async getManyTeachers(options: Prisma.TeacherFindManyArgs): Promise<Teacher[]> {
-    return await prisma.teacher.findMany(options);
+  public async getPaginatedTeachers(page: number, resultsPerPage: number): Promise<Teacher[]> {
+    let skip: number = 0;
+    let take: number = 10;
+    if (page && resultsPerPage) {
+      skip = resultsPerPage * (page - 1);
+      take = resultsPerPage;
+    }
+
+    return await prisma.teacher.findMany({skip, take});
   }
 }
 

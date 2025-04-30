@@ -21,15 +21,10 @@ const addTeacher = catchError(
 const getTeachers = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const {page, resultsPerPage} = req.query;
-    let skip: number = 0;
-    let take: number = 10;
-    if (page && resultsPerPage) {
-      const intPage = parseInt(page as string);
-      const intResultsPerPage = parseInt(resultsPerPage as string);
-      skip = intResultsPerPage * (intPage - 1);
-      take = intResultsPerPage;
-    }
-    const teachers = await teacherService.getManyTeachers({skip, take});
+    const teachers = await teacherService.getPaginatedTeachers(
+      parseInt(page as string),
+      parseInt(resultsPerPage as string)
+    );
 
     res.status(200).json({
       status: 'success',
