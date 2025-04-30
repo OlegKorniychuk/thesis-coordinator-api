@@ -21,7 +21,7 @@ const createBachelor = catchError(async (req: Request, res: Response, next: Next
     );
 
   const newUser = await userService.generateNewUser(
-    UserRole.supervisor,
+    UserRole.bachelor,
     currentDiplomaCycle.diploma_cycle_id
   );
 
