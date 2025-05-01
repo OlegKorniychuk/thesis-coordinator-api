@@ -33,6 +33,23 @@ class TopicService {
       where: {topic_id: id}
     });
   }
+
+  public async countUnconfirmedTopics(diplomaCycleId: string): Promise<number> {
+    return await prisma.topic.count({
+      where: {
+        status: {
+          not: TopicStatus.confirmed
+        },
+        bachelor: {
+          user: {
+            diploma_cycle_id: {
+              equals: diplomaCycleId
+            }
+          }
+        }
+      }
+    });
+  }
 }
 
 export default new TopicService();

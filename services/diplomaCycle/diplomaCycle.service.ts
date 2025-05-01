@@ -17,6 +17,14 @@ class DiplomaService {
   ): Promise<DiplomaCycle> => {
     return await prisma.diplomaCycle.create({data: data});
   };
+
+  public deleteDiplomaCycle = async (id: string): Promise<DiplomaCycle> => {
+    return await prisma.diplomaCycle.delete({
+      where: {
+        diploma_cycle_id: id
+      }
+    });
+  };
 }
 
 export default new DiplomaService();
