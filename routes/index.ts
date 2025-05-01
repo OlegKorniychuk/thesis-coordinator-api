@@ -3,6 +3,7 @@ import diplomaCycleRouter from './diplomaCycle.routes';
 import teacherRouter from './teacher.routes';
 import supervisorRoutes from './supervisor.routes';
 import bachelorRoutes from './bachelor.routes';
+import topicRouter from './topic.routes';
 
 const router = express.Router();
 
@@ -13,5 +14,6 @@ router.use('/diploma-cycles', diplomaCycleRouter);
 router.use('/teachers', teacherRouter);
 router.use('/supervisors', supervisorRoutes);
 router.use('/bachelors', bachelorRoutes);
+router.use('/topics', topicRouter);
 
 export default router;

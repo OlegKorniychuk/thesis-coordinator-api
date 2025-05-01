@@ -11,7 +11,7 @@ class SupervisorService {
   }
 
   public async countSupervisorsBachelors(id: string): Promise<number> {
-    const res = await prisma.supervisor.findUnique({
+    const res = await prisma.supervisor.findUniqueOrThrow({
       select: {
         _count: {
           select: {bachelors: true}
@@ -22,7 +22,7 @@ class SupervisorService {
       }
     });
 
-    return res ? res._count.bachelors : 0;
+    return res._count.bachelors;
   }
 }
 
