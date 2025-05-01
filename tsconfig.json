@@ -17,7 +17,7 @@
     "noImplicitReturns": true,
     "noImplicitAny": false,
     "noImplicitThis": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "paths": {
