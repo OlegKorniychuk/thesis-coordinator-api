@@ -7,4 +7,11 @@ const ValidateCreateSupervisor = z
   })
   .required();
 
-export {ValidateCreateSupervisor};
+const ValidateUpdateSupervisorMaxLoad = z
+  .object({
+    maxLoad: z.number().positive(),
+    supervisorId: z.string().uuid()
+  })
+  .required();
+
+export {ValidateCreateSupervisor, ValidateUpdateSupervisorMaxLoad};

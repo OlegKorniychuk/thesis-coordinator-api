@@ -4,7 +4,10 @@ import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
 import diplomaCycleService from 'services/diplomaCycle/diplomaCycle.service';
 import supervisorService from 'services/supervisor/supervisor.service';
-import {ValidateCreateSupervisor} from 'services/supervisor/supervisor.validate';
+import {
+  ValidateCreateSupervisor,
+  ValidateUpdateSupervisorMaxLoad
+} from 'services/supervisor/supervisor.validate';
 import teacherService from 'services/teacher/teacher.service';
 import userService from 'services/user/user.service';
 
@@ -49,4 +52,32 @@ const createSupervisor = catchError(
   }
 );
 
-export {createSupervisor};
+const changeSupervisorMaxLoad = catchError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const updateData = {supervisorId: req.params.supervisorId, maxLoad: req.body.maxLoad};
+    const {supervisorId, maxLoad} = ValidateUpdateSupervisorMaxLoad.parse(updateData);
+    const assignedBachelors = await supervisorService.countSupervisorsBachelors(supervisorId);
+
+    if (maxLoad < assignedBachelors)
+      return next(
+        new AppError(
+          `Цей керівник вже має ${assignedBachelors} дипломників - навантаження не може бути меншим!`,
+          400
+        )
+      );
+
+    const updatedSupervisor = await supervisorService.changeSupervisorMaxLoad(
+      maxLoad,
+      supervisorId
+    );
+
+    res.status(200).json({
+      status: 'succes',
+      data: {
+        updatedSupervisor
+      }
+    });
+  }
+);
+
+export {createSupervisor, changeSupervisorMaxLoad};
