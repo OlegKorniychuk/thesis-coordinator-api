@@ -2,7 +2,7 @@ import {Prisma, Topic, TopicStatus} from '@prisma/client';
 import prisma from 'prisma/prisma';
 
 class TopicService {
-  public async createTopic(data: Prisma.TopicCreateInput): Promise<Topic> {
+  public async createTopic(data: Prisma.TopicUncheckedCreateInput): Promise<Topic> {
     return await prisma.topic.create({data});
   }
 

@@ -1,9 +1,10 @@
-import {TopicStatus} from '@prisma/client';
+import {Prisma, TopicStatus} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
+import bachelorService from 'services/bachelor/bachelor.service';
 import topicService from 'services/topic/topic.service';
-import {ValidateConfirmTopic} from 'services/topic/topic.validate';
+import {ValidateConfirmTopic, ValidateCreateTopic} from 'services/topic/topic.validate';
 
 const confirmTopic = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const updateData = {topicId: req.params.topicId, refinedTopic: req.body?.refinedTopic};
@@ -23,4 +24,27 @@ const confirmTopic = catchError(async (req: Request, res: Response, next: NextFu
   });
 });
 
-export {confirmTopic};
+const createTopic = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const bachelorId: string = req.params.bachelorId;
+    const data: Prisma.TopicUncheckedCreateInput = ValidateCreateTopic.parse({
+      bachelor_id: bachelorId,
+      ...req.body
+    });
+    const bachelor = await bachelorService.getBachelorById(bachelorId);
+
+    if (!bachelor.supervisor_id)
+      return next(new AppError('Дипломник без керівника не може створити тему!', 400));
+
+    const newTopic = await topicService.createTopic(data);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        newTopic
+      }
+    });
+  }
+);
+
+export {confirmTopic, createTopic};
