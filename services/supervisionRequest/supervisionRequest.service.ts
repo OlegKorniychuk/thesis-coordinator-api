@@ -1,4 +1,5 @@
 import {Prisma, SupervisionRequest} from '@prisma/client';
+import {equal} from 'assert';
 import prisma from 'prisma/prisma';
 
 class SupervisionRequestService {
@@ -18,18 +19,24 @@ class SupervisionRequestService {
     });
   }
 
-  public async getBachelorsSupervisionRequestsToSupervisor(
+  public async getBachelorsSupervisionRequestToSupervisor(
     bachelorId: string,
     supervisorId: string
-  ): Promise<SupervisionRequest[]> {
-    return await prisma.supervisionRequest.findMany({
+  ): Promise<SupervisionRequest | null> {
+    return await prisma.supervisionRequest.findUnique({
       where: {
-        bachelor_id: {
-          equals: bachelorId
-        },
-        supervisor_id: {
-          equals: supervisorId
+        bachelor_id_supervisor_id: {
+          bachelor_id: bachelorId,
+          supervisor_id: supervisorId
         }
+      }
+    });
+  }
+
+  public async deleteSupervisionRequest(id: string): Promise<SupervisionRequest> {
+    return await prisma.supervisionRequest.delete({
+      where: {
+        supervision_request_id: id
       }
     });
   }

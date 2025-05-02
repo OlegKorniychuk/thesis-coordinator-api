@@ -128,6 +128,8 @@ model SupervisionRequest {
 
   bachelor               Bachelor @relation(fields: [bachelor_id], references: [bachelor_id], onDelete: Cascade)
   supervisor             Supervisor @relation(fields: [supervisor_id], references: [supervisor_id], onDelete: Cascade)
+
+  @@unique([bachelor_id, supervisor_id])
 }
 
 model Topic {
