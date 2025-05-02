@@ -1,5 +1,5 @@
 import {DiplomaCyclePhase} from '@prisma/client';
-import {bachelorController} from 'controllers';
+import {bachelorController, supervisionRequestController} from 'controllers';
 import express from 'express';
 import {checkForBody} from 'middleware/checkForBody.middleware';
 import {restrictToPhases} from 'middleware/restrictToPhases.middleware';
@@ -13,5 +13,9 @@ router
     restrictToPhases([DiplomaCyclePhase.preparation]),
     bachelorController.createBachelor
   );
+
+router
+  .route('/:bachelorId/supervision-requests')
+  .get(restrictToPhases(), supervisionRequestController.getBachelorsSupervisionRequests);
 
 export default router;

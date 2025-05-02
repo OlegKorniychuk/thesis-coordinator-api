@@ -31,4 +31,18 @@ const createSupervisionRequest = catchError(
   }
 );
 
-export {createSupervisionRequest};
+const getBachelorsSupervisionRequests = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const bachelorId: string = req.params.bachelorId;
+    const supervisionRequests =
+      await supervisionRequestService.getBachelorsSupervisionRequests(bachelorId);
+
+    res.status(200).json({
+      data: {
+        supervisionRequests
+      }
+    });
+  }
+);
+
+export {createSupervisionRequest, getBachelorsSupervisionRequests};
