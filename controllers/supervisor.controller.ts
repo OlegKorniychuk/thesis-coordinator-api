@@ -1,4 +1,4 @@
-import {UserRole} from '@prisma/client';
+import {DiplomaCycle, UserRole} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
@@ -14,15 +14,10 @@ import userService from 'services/user/user.service';
 const createSupervisor = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const {teacherId, maxLoad} = ValidateCreateSupervisor.parse(req.body);
+    const currentDiplomaCycle = req['currentDiplomaCycle'];
 
     const teacher = await teacherService.getTeacherById(teacherId);
     if (!teacher) return next(new AppError('Такого викладача не існує!', 400));
-
-    const currentDiplomaCycle = await diplomaCycleService.getCurrentDiplomaCycle();
-    if (!currentDiplomaCycle)
-      return next(
-        new AppError('Неможливо створити керівника - дипломний період не розпочато!', 400)
-      );
 
     const newUser = await userService.generateNewUser(
       UserRole.supervisor,
@@ -82,9 +77,7 @@ const changeSupervisorMaxLoad = catchError(
 
 const getSupervisorsWithLoad = catchError(
   async (req: Request, res: Response, next: NextFunction) => {
-    const currentCycle = await diplomaCycleService.getCurrentDiplomaCycle();
-
-    if (!currentCycle) return next(new AppError('Дипломний цикл не розпочато!', 400));
+    const currentCycle: DiplomaCycle = req['currentDiplomaCycle'];
 
     const supervisors = await supervisorService.getSupervisorsWithLoad(
       currentCycle.diploma_cycle_id

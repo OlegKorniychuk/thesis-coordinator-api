@@ -26,19 +26,9 @@ const startNewCycle = catchError(async (req: Request, res: Response, next: NextF
 });
 
 const endCurrentCycle = catchError(async (req: Request, res: Response, next: NextFunction) => {
-  const diplomaCycleData: DiplomaCycle | null = await diplomaCycleService.getCurrentDiplomaCycle();
+  const currentDiplomaCycle: DiplomaCycle = req['currentDiplomaCycle'];
 
-  if (!diplomaCycleData) return next(new AppError('Немає активного дипломного періоду!', 400));
-
-  if (diplomaCycleData.current_phase !== DiplomaCyclePhase.post_cycle)
-    return next(
-      new AppError(
-        `Дипломний період неможливо завершити раніше ${diplomaCycleData.topic_selection_end_date}`,
-        400
-      )
-    );
-
-  const diplomaCycleId = diplomaCycleData.diploma_cycle_id;
+  const diplomaCycleId = currentDiplomaCycle.diploma_cycle_id;
 
   const unconfirmedTopicsCount = await topicService.countUnconfirmedTopics(diplomaCycleId);
 
@@ -53,7 +43,7 @@ const endCurrentCycle = catchError(async (req: Request, res: Response, next: Nex
   const bachelorsData: IBachelorFullData[] =
     await bachelorService.getBachelorsFullData(diplomaCycleId);
   const archivedBachelors = bachelorsData.map(bachelor => ({
-    year: diplomaCycleData.year,
+    year: currentDiplomaCycle.year,
     full_name: [
       bachelor.student.last_name,
       bachelor.student.first_name,

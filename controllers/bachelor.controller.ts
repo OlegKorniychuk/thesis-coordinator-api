@@ -1,4 +1,4 @@
-import {UserRole} from '@prisma/client';
+import {DiplomaCycle, UserRole} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
@@ -10,15 +10,10 @@ import userService from 'services/user/user.service';
 
 const createBachelor = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const studentData = ValidateCreateStudent.parse(req.body);
+  const currentDiplomaCycle: DiplomaCycle = req['currentDiplomaCycle'];
 
   const newStudent = await studentService.createStudent(studentData);
   if (!newStudent) return next(new AppError('Помилка при збереженні студента!', 500));
-
-  const currentDiplomaCycle = await diplomaCycleService.getCurrentDiplomaCycle();
-  if (!currentDiplomaCycle)
-    return next(
-      new AppError('Неможливо створити дипломника - дипломний період не розпочато!', 400)
-    );
 
   const newUser = await userService.generateNewUser(
     UserRole.bachelor,
