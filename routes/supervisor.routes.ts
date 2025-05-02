@@ -4,7 +4,10 @@ import {checkForBody} from 'middleware/checkForBody.middleware';
 
 const router = express.Router();
 
-router.route('/').post(checkForBody, supervisorController.createSupervisor);
+router
+  .route('/')
+  .get(supervisorController.getSupervisorsWithLoad)
+  .post(checkForBody, supervisorController.createSupervisor);
 router
   .route('/:supervisorId/change-max-load')
   .patch(checkForBody, supervisorController.changeSupervisorMaxLoad);

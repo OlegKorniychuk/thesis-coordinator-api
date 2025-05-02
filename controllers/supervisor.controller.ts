@@ -80,4 +80,23 @@ const changeSupervisorMaxLoad = catchError(
   }
 );
 
-export {createSupervisor, changeSupervisorMaxLoad};
+const getSupervisorsWithLoad = catchError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const currentCycle = await diplomaCycleService.getCurrentDiplomaCycle();
+
+    if (!currentCycle) return next(new AppError('Дипломний цикл не розпочато!', 400));
+
+    const supervisors = await supervisorService.getSupervisorsWithLoad(
+      currentCycle.diploma_cycle_id
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        supervisors
+      }
+    });
+  }
+);
+
+export {createSupervisor, changeSupervisorMaxLoad, getSupervisorsWithLoad};
