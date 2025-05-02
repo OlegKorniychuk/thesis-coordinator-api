@@ -123,7 +123,7 @@ model SupervisionRequest {
   bachelor_id            String @db.Uuid
   supervisor_id          String @db.Uuid
   comment                String?
-  proposed_topic         String
+  proposed_topic         String?
   status                 SupervisionRequestStatus @default(pending)
 
   bachelor               Bachelor @relation(fields: [bachelor_id], references: [bachelor_id], onDelete: Cascade)
