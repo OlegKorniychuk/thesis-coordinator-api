@@ -7,15 +7,16 @@ import {ValidateCreateSupervisionRequest} from 'services/supervisionRequest/supe
 
 const createSupervisionRequest = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const bachelorId: string = req.params.bachelorId;
     const data: Prisma.SupervisionRequestUncheckedCreateInput =
-      ValidateCreateSupervisionRequest.parse(req.body);
+      ValidateCreateSupervisionRequest.parse({bachelor_id: bachelorId, ...req.body});
     const existingRequest =
       await supervisionRequestService.getBachelorsSupervisionRequestToSupervisor(
         data.bachelor_id,
         data.supervisor_id
       );
 
-    if (existingRequest?.status !== SupervisionRequestStatus.rejected)
+    if (existingRequest && existingRequest.status !== SupervisionRequestStatus.rejected)
       return next(
         new AppError('Неможливо надіслати повторний запит - попередній не був відхилений!', 400)
       );
