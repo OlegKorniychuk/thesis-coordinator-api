@@ -14,6 +14,8 @@ router
     bachelorController.createBachelor
   );
 
+router.route('/:bachelorId').get(restrictToPhases(), bachelorController.getBachelorFullData);
+
 router
   .route('/:bachelorId/supervision-requests')
   .get(restrictToPhases(), supervisionRequestController.getBachelorsSupervisionRequests);

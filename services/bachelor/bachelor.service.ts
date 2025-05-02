@@ -37,6 +37,23 @@ class SupervisorService {
       }
     });
   }
+
+  public async getBachelorsFullDataById(id: string): Promise<IBachelorFullData> {
+    return await prisma.bachelor.findUniqueOrThrow({
+      include: {
+        student: true,
+        topic: true,
+        supervisor: {
+          include: {
+            teacher: true
+          }
+        }
+      },
+      where: {
+        bachelor_id: id
+      }
+    });
+  }
 }
 
 export default new SupervisorService();
