@@ -24,6 +24,21 @@ class SupervisorService {
 
     return res._count.bachelors;
   }
+
+  public async getSupervisorsWithLoad(diplomaCycleId: string) {
+    return await prisma.supervisor.findMany({
+      select: {
+        supervisor_id: true,
+        max_load: true,
+        teacher: true,
+        _count: {
+          select: {
+            bachelors: true
+          }
+        }
+      }
+    });
+  }
 }
 
 export default new SupervisorService();

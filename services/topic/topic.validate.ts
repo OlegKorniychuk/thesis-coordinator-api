@@ -5,4 +5,10 @@ const ValidateConfirmTopic = z.object({
   refinedTopic: z.string().min(10).optional()
 });
 
-export {ValidateConfirmTopic};
+const ValidateCreateTopic = z.object({
+  bachelor_id: z.string().uuid(),
+  name: z.string().nonempty(),
+  description: z.string().nonempty().optional()
+});
+
+export {ValidateConfirmTopic, ValidateCreateTopic};
