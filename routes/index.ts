@@ -3,7 +3,7 @@ import diplomaCycleRouter from './diplomaCycle.routes';
 import teacherRouter from './teacher.routes';
 import supervisorRouter from './supervisor.routes';
 import bachelorRoutes from './bachelor/bachelor.routes';
-import topicRouter from './topic.routes';
+import topicRouter from './bachelor/topic.routes';
 
 const router = express.Router();
 

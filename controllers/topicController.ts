@@ -7,8 +7,10 @@ import topicService from 'services/topic/topic.service';
 import {ValidateConfirmTopic, ValidateCreateTopic} from 'services/topic/topic.validate';
 
 const confirmTopic = catchError(async (req: Request, res: Response, next: NextFunction) => {
-  const updateData = {topicId: req.params.topicId, refinedTopic: req.body?.refinedTopic};
-  const {topicId, refinedTopic} = ValidateConfirmTopic.parse(updateData);
+  const {topicId, refinedTopic} = ValidateConfirmTopic.parse({
+    topicId: req.params.topicId,
+    ...req.body
+  });
   const topicStatus = await topicService.getTopicStatus(topicId);
 
   if (topicStatus !== TopicStatus.on_confirmation)

@@ -4,6 +4,7 @@ import express from 'express';
 import {checkForBody} from 'middleware/checkForBody.middleware';
 import {restrictToPhases} from 'middleware/restrictToPhases.middleware';
 import supervisionRequestsRouter from './supervisionRequest.routes';
+import topicRouter from './topic.routes';
 
 const router = express.Router();
 
@@ -18,13 +19,6 @@ router
 router.route('/:bachelorId').get(restrictToPhases(), bachelorController.getBachelorFullData);
 
 router.use('/:bachelorId/supervision-requests', supervisionRequestsRouter);
-
-router
-  .route('/:bachelorId/topics')
-  .post(
-    checkForBody,
-    restrictToPhases([DiplomaCyclePhase.supervisor_selection, DiplomaCyclePhase.topic_selection]),
-    topicController.createTopic
-  );
+router.use('/:bachelorId/topics', topicRouter);
 
 export default router;
