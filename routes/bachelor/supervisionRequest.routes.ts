@@ -15,4 +15,19 @@ router
     supervisionRequestController.createSupervisionRequest
   );
 
+router
+  .route('/:supervisionRequestId/accept')
+  .patch(
+    restrictToPhases([DiplomaCyclePhase.supervisor_selection]),
+    supervisionRequestController.acceptSupervisionRequest
+  );
+
+router
+  .route('/:supervisionRequestId/reject')
+  .patch(
+    checkForBody,
+    restrictToPhases([DiplomaCyclePhase.supervisor_selection]),
+    supervisionRequestController.rejectSupervisionRequest
+  );
+
 export default router;

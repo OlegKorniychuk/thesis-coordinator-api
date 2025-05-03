@@ -7,4 +7,10 @@ const ValidateCreateSupervisionRequest = z.object({
   proposed_topic: z.string().nonempty().optional()
 });
 
-export {ValidateCreateSupervisionRequest};
+const ValidateRejectSupervisionRequest = z
+  .object({
+    comment: z.string().nonempty()
+  })
+  .required();
+
+export {ValidateCreateSupervisionRequest, ValidateRejectSupervisionRequest};
