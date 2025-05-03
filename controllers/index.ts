@@ -4,3 +4,4 @@ export * as supervisorController from './supervisor.controller';
 export * as bachelorController from './bachelor.controller';
 export * as topicController from './topicController';
 export * as supervisionRequestController from './supervisionRequest.controller';
+export * as supervisorInfoController from './supervisorInfoController';
