@@ -1,7 +1,6 @@
 import {z} from 'zod';
 
 const ValidateConfirmTopic = z.object({
-  topicId: z.string().uuid(),
   refinedTopic: z.string().min(10).optional()
 });
 
@@ -11,4 +10,10 @@ const ValidateCreateTopic = z.object({
   comment: z.string().nonempty().optional()
 });
 
-export {ValidateConfirmTopic, ValidateCreateTopic};
+const ValidateRejectTopic = z
+  .object({
+    comment: z.string().nonempty()
+  })
+  .required();
+
+export {ValidateConfirmTopic, ValidateCreateTopic, ValidateRejectTopic};

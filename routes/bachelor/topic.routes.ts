@@ -15,5 +15,18 @@ router
   );
 
 router.route('/:topicId/confirm').patch(restrictToPhases(), topicController.confirmTopic);
+router
+  .route('/:topicId/accept')
+  .patch(
+    restrictToPhases([DiplomaCyclePhase.supervisor_selection, DiplomaCyclePhase.topic_selection]),
+    topicController.acceptTopic
+  );
+router
+  .route('/:topicId/reject')
+  .patch(
+    checkForBody,
+    restrictToPhases([DiplomaCyclePhase.supervisor_selection, DiplomaCyclePhase.topic_selection]),
+    topicController.rejectTopic
+  );
 
 export default router;

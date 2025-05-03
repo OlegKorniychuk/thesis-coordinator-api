@@ -50,6 +50,23 @@ class TopicService {
       }
     });
   }
+
+  public async updateTopicStatus(
+    id: string,
+    status: TopicStatus,
+    comment?: string
+  ): Promise<Topic> {
+    const updateData: Prisma.TopicUpdateInput = {status: status};
+
+    if (comment) updateData.comment = comment;
+
+    return await prisma.topic.update({
+      data: updateData,
+      where: {
+        topic_id: id
+      }
+    });
+  }
 }
 
 export default new TopicService();
