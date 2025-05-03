@@ -8,7 +8,7 @@ const ValidateConfirmTopic = z.object({
 const ValidateCreateTopic = z.object({
   bachelor_id: z.string().uuid(),
   name: z.string().nonempty(),
-  description: z.string().nonempty().optional()
+  comment: z.string().nonempty().optional()
 });
 
 export {ValidateConfirmTopic, ValidateCreateTopic};

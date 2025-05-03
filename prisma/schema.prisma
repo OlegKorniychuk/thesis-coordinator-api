@@ -136,7 +136,7 @@ model Topic {
   topic_id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   bachelor_id        String  @db.Uuid @unique
   name               String
-  description        String?
+  comment            String?
   status             TopicStatus  @default(pending)
 
   bachelor           Bachelor @relation(fields: [bachelor_id], references: [bachelor_id], onDelete: Cascade)
