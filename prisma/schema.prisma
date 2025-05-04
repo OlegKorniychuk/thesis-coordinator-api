@@ -40,7 +40,8 @@ enum TopicStatus {
 model User {
   user_id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   login             String
-  password          String
+  password_plain    String?
+  password_hash     String
   role              UserRole
   diploma_cycle_id  String?  @db.Uuid
   diploma_cycle     DiplomaCycle? @relation(fields: [diploma_cycle_id], references: [diploma_cycle_id], onDelete: Cascade)

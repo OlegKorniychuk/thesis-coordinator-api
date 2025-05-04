@@ -34,7 +34,13 @@ class UserService {
 
     const password = this.generateSecureString(10);
     const newUser = await prisma.user.create({
-      data: {login: login, password: password, role: role, diploma_cycle_id: diplomaCycleId}
+      data: {
+        login: login,
+        password_plain: password,
+        password_hash: password,
+        role: role,
+        diploma_cycle_id: diplomaCycleId
+      }
     });
 
     return newUser;
