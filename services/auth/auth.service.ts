@@ -2,7 +2,7 @@ import {Prisma, User, UserRole} from '@prisma/client';
 import {randomBytes} from 'crypto';
 import prisma from 'prisma/prisma';
 
-class UserService {
+class AuthService {
   private readonly DEFAULT_CHARSET =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*_';
 
@@ -18,7 +18,7 @@ class UserService {
     return result.join('');
   };
 
-  public getUser = async (filter: Prisma.UserWhereInput): Promise<User | null> => {
+  private getUserData = async (filter: Prisma.UserWhereInput): Promise<User | null> => {
     return await prisma.user.findFirst({where: filter});
   };
 
@@ -28,7 +28,7 @@ class UserService {
 
     while (exists) {
       login = this.generateSecureString(12);
-      const user = await this.getUser({login: login});
+      const user = await this.getUserData({login: login});
       if (!user) exists = false;
     }
 
@@ -47,4 +47,4 @@ class UserService {
   };
 }
 
-export default new UserService();
+export default new AuthService();

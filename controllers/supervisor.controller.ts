@@ -9,7 +9,7 @@ import {
   ValidateUpdateSupervisorMaxLoad
 } from 'services/supervisor/supervisor.validate';
 import teacherService from 'services/teacher/teacher.service';
-import userService from 'services/user/user.service';
+import authService from 'services/auth/auth.service';
 
 const createSupervisor = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -19,7 +19,7 @@ const createSupervisor = catchError(
     const teacher = await teacherService.getTeacherById(teacherId);
     if (!teacher) return next(new AppError('Такого викладача не існує!', 400));
 
-    const newUser = await userService.generateNewUser(
+    const newUser = await authService.generateNewUser(
       UserRole.supervisor,
       currentDiplomaCycle.diploma_cycle_id
     );
