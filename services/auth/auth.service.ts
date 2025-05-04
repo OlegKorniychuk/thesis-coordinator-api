@@ -1,10 +1,13 @@
 import {Prisma, User, UserRole} from '@prisma/client';
 import {randomBytes} from 'crypto';
+import bcrypt from 'bcrypt';
 import prisma from 'prisma/prisma';
 
 class AuthService {
   private readonly DEFAULT_CHARSET =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*_';
+
+  private readonly HASH_ROUNDS = 12;
 
   private generateSecureString = (length: number): string => {
     const bytes = randomBytes(length);
@@ -22,6 +25,14 @@ class AuthService {
     return await prisma.user.findFirst({where: filter});
   };
 
+  private async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, this.HASH_ROUNDS);
+  }
+
+  private async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(plainPassword, hashedPassword);
+  }
+
   public generateNewUser = async (role: UserRole, diplomaCycleId: string): Promise<User> => {
     let login: string = '';
     let exists = true;
@@ -33,11 +44,12 @@ class AuthService {
     }
 
     const password = this.generateSecureString(10);
+    const hashedPassword = await this.hashPassword(password);
     const newUser = await prisma.user.create({
       data: {
         login: login,
         password_plain: password,
-        password_hash: password,
+        password_hash: hashedPassword,
         role: role,
         diploma_cycle_id: diplomaCycleId
       }
