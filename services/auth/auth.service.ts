@@ -6,6 +6,7 @@ import {log} from 'console';
 import jwtService from './jwt.service';
 import {IUserPayload} from '@interfaces/userPayload.interface';
 import settings from 'settings';
+import {SafeUser} from '@interfaces/safeUser.interface';
 
 class AuthService {
   private readonly DEFAULT_CHARSET =
@@ -94,23 +95,21 @@ class AuthService {
     return {refreshToken, accessToken};
   }
 
-  public async logIn(login: string, password: string): Promise<User | null> {
-    const user = await prisma.user.findFirst({
+  public async logIn(login: string, password: string): Promise<SafeUser | null> {
+    const user: User | null = await prisma.user.findFirst({
       where: {
         login: login
-      },
-      include: {
-        refresh_token: true
       }
     });
 
     if (!user) return null;
 
-    const passwordValid = await this.validateHashedString(password, user.password_hash);
+    const passwordValid: boolean = await this.validateHashedString(password, user.password_hash);
 
     if (!passwordValid) return null;
 
-    return user;
+    const {password_plain, password_hash, ...safeUser} = user;
+    return safeUser;
   }
 }
 
