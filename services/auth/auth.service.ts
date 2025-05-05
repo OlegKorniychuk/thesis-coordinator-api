@@ -2,6 +2,10 @@ import {Prisma, User, UserRole} from '@prisma/client';
 import {randomBytes} from 'crypto';
 import bcrypt from 'bcrypt';
 import prisma from 'prisma/prisma';
+import {log} from 'console';
+import jwtService from './jwt.service';
+import {IUserPayload} from '@interfaces/userPayload.interface';
+import settings from 'settings';
 
 class AuthService {
   private readonly DEFAULT_CHARSET =
@@ -25,12 +29,12 @@ class AuthService {
     return await prisma.user.findFirst({where: filter});
   };
 
-  private async hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, this.HASH_ROUNDS);
+  private async hashString(input: string): Promise<string> {
+    return await bcrypt.hash(input, this.HASH_ROUNDS);
   }
 
-  private async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return await bcrypt.compare(plainPassword, hashedPassword);
+  private async validateHashedString(plainString: string, hashedString: string): Promise<boolean> {
+    return await bcrypt.compare(plainString, hashedString);
   }
 
   public generateNewUser = async (role: UserRole, diplomaCycleId: string): Promise<User> => {
@@ -44,7 +48,7 @@ class AuthService {
     }
 
     const password = this.generateSecureString(10);
-    const hashedPassword = await this.hashPassword(password);
+    const hashedPassword = await this.hashString(password);
     const newUser = await prisma.user.create({
       data: {
         login: login,
@@ -57,6 +61,57 @@ class AuthService {
 
     return newUser;
   };
+
+  public async generateTokens(
+    userId: string,
+    userRole: UserRole
+  ): Promise<{accessToken: string; refreshToken: string}> {
+    const payload: IUserPayload = {user_id: userId, role: userRole};
+    const accessToken = jwtService.createJwt(
+      payload,
+      settings.accessTokenSecret,
+      settings.accessTokenExpiresIn
+    );
+    const refreshToken = jwtService.createJwt(
+      payload,
+      settings.refreshTokenSecret,
+      settings.refreshTokenExpiresIn
+    );
+    // saving refresh token or replacing if exists
+    await prisma.refreshToken.upsert({
+      update: {
+        token: refreshToken
+      },
+      create: {
+        token: refreshToken,
+        user_id: userId
+      },
+      where: {
+        user_id: userId
+      }
+    });
+
+    return {refreshToken, accessToken};
+  }
+
+  public async logIn(login: string, password: string): Promise<User | null> {
+    const user = await prisma.user.findFirst({
+      where: {
+        login: login
+      },
+      include: {
+        refresh_token: true
+      }
+    });
+
+    if (!user) return null;
+
+    const passwordValid = await this.validateHashedString(password, user.password_hash);
+
+    if (!passwordValid) return null;
+
+    return user;
+  }
 }
 
 export default new AuthService();
