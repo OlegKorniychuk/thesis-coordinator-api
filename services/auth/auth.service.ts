@@ -1,4 +1,4 @@
-import {Prisma, User, UserRole} from '@prisma/client';
+import {Prisma, RefreshToken, User, UserRole} from '@prisma/client';
 import {randomBytes} from 'crypto';
 import bcrypt from 'bcrypt';
 import prisma from 'prisma/prisma';
@@ -89,6 +89,14 @@ class AuthService {
     });
 
     return refreshToken;
+  }
+
+  public async invalidateRefreshToken(token: string): Promise<RefreshToken> {
+    return await prisma.refreshToken.delete({
+      where: {
+        token: token
+      }
+    });
   }
 
   public async logIn(login: string, password: string): Promise<SafeUser | null> {

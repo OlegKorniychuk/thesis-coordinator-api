@@ -5,6 +5,9 @@ import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
 import authService from 'services/auth/auth.service';
 import {ValidateLogIn} from 'services/auth/auth.validate';
+import jwt from 'jsonwebtoken';
+import settings from 'settings';
+import {IUserPayload} from '@interfaces/userPayload.interface';
 
 const logIn = catchError(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const {login, password} = ValidateLogIn.parse(req.body);
@@ -34,4 +37,35 @@ const logIn = catchError(async (req: Request, res: Response, next: NextFunction)
   });
 });
 
-export {logIn};
+const refreshAccessToken = catchError(async (req: Request, res: Response, next: NextFunction) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) return next(new AppError('Refresh token missing!', 400));
+
+  try {
+    const refreshPayload = jwt.verify(refreshToken, settings.refreshTokenSecret) as IUserPayload;
+    const newAccessToken = authService.generateAccessToken(
+      refreshPayload.user_id,
+      refreshPayload.role
+    );
+    res.cookie('accessToken', newAccessToken, {
+      secure: true,
+      httpOnly: false,
+      sameSite: 'strict'
+    });
+
+    res.status(204).json({});
+  } catch (err) {
+    res.clearCookie('refreshToken');
+    console.log(refreshToken);
+    if (err.name === 'TokenExpiredError') {
+      await authService.invalidateRefreshToken(refreshToken);
+      return next(new AppError('Термін дії вашої сесії сплив, потрібно авторизуватися.', 401));
+    }
+    if (err.name === 'JsonWebTokenError') return next(new AppError('Refresh token invalid!', 401));
+
+    throw err;
+  }
+});
+
+export {logIn, refreshAccessToken};

@@ -5,5 +5,6 @@ import {checkForBody} from 'middleware/checkForBody.middleware';
 const router = express.Router();
 
 router.route('/login').post(checkForBody, authController.logIn);
+router.route('/refresh').post(authController.refreshAccessToken);
 
 export default router;
