@@ -40,12 +40,14 @@ enum TopicStatus {
 model User {
   user_id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   login             String
-  password          String
+  password_plain    String?
+  password_hash     String
   role              UserRole
   diploma_cycle_id  String?  @db.Uuid
   diploma_cycle     DiplomaCycle? @relation(fields: [diploma_cycle_id], references: [diploma_cycle_id], onDelete: Cascade)
   bachelor          Bachelor?
   supervisor        Supervisor?
+  refresh_token     RefreshToken?
 }
 
 model Student {
@@ -153,4 +155,11 @@ model ArchivedBachelor {
   supervisor_full_name  String
   supervisor_degree     String
   supervisor_position   String
+}
+
+model RefreshToken {
+  token             String @id
+  user_id           String @db.Uuid @unique
+
+  user              User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }

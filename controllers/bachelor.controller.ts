@@ -7,7 +7,7 @@ import bachelorService from 'services/bachelor/bachelor.service';
 import diplomaCycleService from 'services/diplomaCycle/diplomaCycle.service';
 import studentService from 'services/student/student.service';
 import {ValidateCreateStudent} from 'services/student/student.validate';
-import userService from 'services/user/user.service';
+import authService from 'services/auth/auth.service';
 
 const createBachelor = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const studentData = ValidateCreateStudent.parse(req.body);
@@ -16,7 +16,7 @@ const createBachelor = catchError(async (req: Request, res: Response, next: Next
   const newStudent = await studentService.createStudent(studentData);
   if (!newStudent) return next(new AppError('Помилка при збереженні студента!', 500));
 
-  const newUser = await userService.generateNewUser(
+  const newUser = await authService.generateNewUser(
     UserRole.bachelor,
     currentDiplomaCycle.diploma_cycle_id
   );

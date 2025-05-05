@@ -1,5 +1,6 @@
 import app from './app';
+import settings from 'settings';
 
-app.listen(3000, () => {
-  console.log('Server up and running on port 3000');
+app.listen(settings.port, () => {
+  console.log(`Server up and running on port ${settings.port}`);
 });
