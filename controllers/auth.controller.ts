@@ -68,4 +68,18 @@ const refreshAccessToken = catchError(async (req: Request, res: Response, next: 
   }
 });
 
-export {logIn, refreshAccessToken};
+const logout = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) return next(new AppError('Refresh token missing!', 400));
+
+    await authService.invalidateRefreshToken(refreshToken);
+    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken');
+
+    res.status(204).json({});
+  }
+);
+
+export {logIn, refreshAccessToken, logout};
