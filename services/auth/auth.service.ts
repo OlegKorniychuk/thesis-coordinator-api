@@ -2,11 +2,10 @@ import {Prisma, User, UserRole} from '@prisma/client';
 import {randomBytes} from 'crypto';
 import bcrypt from 'bcrypt';
 import prisma from 'prisma/prisma';
-import {log} from 'console';
-import jwtService from './jwt.service';
 import {IUserPayload} from '@interfaces/userPayload.interface';
 import settings from 'settings';
 import {SafeUser} from '@interfaces/safeUser.interface';
+import jwt from 'jsonwebtoken';
 
 class AuthService {
   private readonly DEFAULT_CHARSET =
@@ -63,21 +62,18 @@ class AuthService {
     return newUser;
   };
 
-  public async generateTokens(
-    userId: string,
-    userRole: UserRole
-  ): Promise<{accessToken: string; refreshToken: string}> {
+  public generateAccessToken(userId: string, userRole: UserRole): string {
     const payload: IUserPayload = {user_id: userId, role: userRole};
-    const accessToken = jwtService.createJwt(
-      payload,
-      settings.accessTokenSecret,
-      settings.accessTokenExpiresIn
-    );
-    const refreshToken = jwtService.createJwt(
-      payload,
-      settings.refreshTokenSecret,
-      settings.refreshTokenExpiresIn
-    );
+    return jwt.sign(payload, settings.accessTokenSecret, {
+      expiresIn: settings.accessTokenExpiresIn
+    });
+  }
+
+  public async generateRefreshToken(userId: string, userRole: UserRole): Promise<string> {
+    const payload: IUserPayload = {user_id: userId, role: userRole};
+    const refreshToken = jwt.sign(payload, settings.refreshTokenSecret, {
+      expiresIn: settings.refreshTokenExpiresIn
+    });
     // saving refresh token or replacing if exists
     await prisma.refreshToken.upsert({
       update: {
@@ -92,7 +88,7 @@ class AuthService {
       }
     });
 
-    return {refreshToken, accessToken};
+    return refreshToken;
   }
 
   public async logIn(login: string, password: string): Promise<SafeUser | null> {

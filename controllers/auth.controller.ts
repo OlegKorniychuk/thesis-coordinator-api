@@ -12,14 +12,15 @@ const logIn = catchError(async (req: Request, res: Response, next: NextFunction)
 
   if (!user) return next(new AppError('Невірний логін або пароль!', 401));
 
-  const tokens = await authService.generateTokens(user.user_id, user.role);
+  const accessToken = await authService.generateAccessToken(user.user_id, user.role);
+  const refreshToken = await authService.generateRefreshToken(user.user_id, user.role);
 
-  res.cookie('accessToken', tokens.accessToken, {
+  res.cookie('accessToken', accessToken, {
     secure: true,
     httpOnly: false,
     sameSite: 'strict'
   });
-  res.cookie('refreshToken', tokens.accessToken, {
+  res.cookie('refreshToken', refreshToken, {
     secure: true,
     httpOnly: false,
     sameSite: 'strict'
