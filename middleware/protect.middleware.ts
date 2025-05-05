@@ -10,7 +10,7 @@ const protect = (req: Request, res: Response, next: NextFunction): void => {
 
   try {
     const userData = jwt.verify(accessToken, settings.accessTokenSecret);
-    res['userData'] = userData;
+    res['user'] = userData;
     console.log(userData);
     next();
   } catch (err) {
