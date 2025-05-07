@@ -19,12 +19,12 @@ const logIn = catchError(async (req: Request, res: Response, next: NextFunction)
   const refreshToken = await authService.generateRefreshToken(user.user_id, user.role);
 
   res.cookie('accessToken', accessToken, {
-    secure: true,
+    secure: false,
     httpOnly: false,
     sameSite: 'strict'
   });
   res.cookie('refreshToken', refreshToken, {
-    secure: true,
+    secure: false,
     httpOnly: false,
     sameSite: 'strict'
   });
