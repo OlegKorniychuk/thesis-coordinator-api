@@ -8,7 +8,7 @@ import {restrictToRoles} from 'middleware/restrictToRoles.middleware';
 
 const router = express.Router();
 
-router.route('/*splat').all(protect);
+router.use(protect);
 
 router
   .route('/')
