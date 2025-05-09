@@ -55,7 +55,7 @@ const getMyData = catchError(
 const refreshAccessToken = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const refreshToken = req.cookies.refreshToken;
 
-  if (!refreshToken) return next(new AppError('Refresh token missing!', 400));
+  if (!refreshToken) return next(new AppError('Refresh token missing!', 401));
 
   try {
     const refreshPayload = jwt.verify(refreshToken, settings.refreshTokenSecret) as IUserPayload;

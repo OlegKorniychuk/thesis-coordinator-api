@@ -17,5 +17,6 @@ router
     restrictToPhases([DiplomaCyclePhase.post_cycle]),
     diplomaCycleController.endCurrentCycle
   );
+router.route('/get-current').get(diplomaCycleController.getCurrentCycle);
 
 export default router;

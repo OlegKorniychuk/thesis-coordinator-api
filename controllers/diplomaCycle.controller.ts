@@ -77,4 +77,17 @@ const endCurrentCycle = catchError(async (req: Request, res: Response, next: Nex
   res.status(204).json({});
 });
 
-export {startNewCycle, endCurrentCycle};
+const getCurrentCycle = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const diplomaCycle: DiplomaCycle | null = await diplomaCycleService.getCurrentDiplomaCycle();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        diplomaCycle
+      }
+    });
+  }
+);
+
+export {startNewCycle, endCurrentCycle, getCurrentCycle};
