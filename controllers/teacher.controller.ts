@@ -26,9 +26,12 @@ const getTeachers = catchError(
       parseInt(resultsPerPage as string)
     );
 
+    const total = await teacherService.getTeachersCount();
+
     res.status(200).json({
       status: 'success',
       data: {
+        total,
         teachers
       }
     });
