@@ -88,7 +88,7 @@ const logout = catchError(
 
     if (!refreshToken) return next(new AppError('Refresh token missing!', 400));
 
-    await authService.invalidateRefreshToken(refreshToken);
+    await authService.invalidateRefreshToken(req['user'].user_id);
     res.clearCookie('refreshToken');
     res.clearCookie('accessToken');
 

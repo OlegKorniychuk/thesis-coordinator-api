@@ -75,15 +75,22 @@ class AuthService {
       expiresIn: settings.refreshTokenExpiresIn
     });
     // saving refresh token or replacing if exists
-    await prisma.refreshToken.upsert({
-      update: {
-        token: refreshToken
-      },
-      create: {
+    // await prisma.refreshToken.upsert({
+    //   update: {
+    //     token: refreshToken
+    //   },
+    //   create: {
+    //     token: refreshToken,
+    //     user_id: userId
+    //   },
+    //   where: {
+    //     user_id: userId
+    //   }
+    // });
+
+    await prisma.refreshToken.create({
+      data: {
         token: refreshToken,
-        user_id: userId
-      },
-      where: {
         user_id: userId
       }
     });
@@ -91,10 +98,12 @@ class AuthService {
     return refreshToken;
   }
 
-  public async invalidateRefreshToken(token: string): Promise<RefreshToken> {
-    return await prisma.refreshToken.delete({
+  public async invalidateRefreshToken(userId: string): Promise<Prisma.BatchPayload> {
+    return await prisma.refreshToken.deleteMany({
       where: {
-        token: token
+        user_id: {
+          equals: userId
+        }
       }
     });
   }
