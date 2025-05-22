@@ -56,4 +56,24 @@ const getBachelorFullData = catchError(
   }
 );
 
-export {createBachelor, getBachelorFullData};
+const getBachelors = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {page, resultsPerPage} = req.query;
+    const bachelors = await bachelorService.getPaginatedBachelors(
+      parseInt(page as string),
+      parseInt(resultsPerPage as string)
+    );
+
+    const total = await bachelorService.getBachelorsCount();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        total,
+        bachelors
+      }
+    });
+  }
+);
+
+export {createBachelor, getBachelorFullData, getBachelors};

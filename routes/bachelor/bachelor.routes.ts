@@ -14,6 +14,7 @@ router.use(protect);
 
 router
   .route('/')
+  .get(restrictToRoles([UserRole.admin, UserRole.supervisor]), bachelorController.getBachelors)
   .post(
     restrictToRoles([UserRole.admin]),
     checkForBody,

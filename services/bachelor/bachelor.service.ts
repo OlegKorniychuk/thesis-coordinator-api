@@ -54,6 +54,27 @@ class SupervisorService {
       }
     });
   }
+
+  public async getPaginatedBachelors(page?: number, resultsPerPage?: number) {
+    let skip: number = 0;
+    let take: number = 10;
+    if (page && resultsPerPage) {
+      skip = resultsPerPage * (page - 1);
+      take = resultsPerPage;
+    }
+
+    return await prisma.bachelor.findMany({
+      skip,
+      take,
+      include: {
+        student: true
+      }
+    });
+  }
+
+  public async getBachelorsCount(): Promise<number> {
+    return await prisma.bachelor.count();
+  }
 }
 
 export default new SupervisorService();

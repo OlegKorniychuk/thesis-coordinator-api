@@ -75,25 +75,25 @@ class AuthService {
       expiresIn: settings.refreshTokenExpiresIn
     });
     // saving refresh token or replacing if exists
-    // await prisma.refreshToken.upsert({
-    //   update: {
-    //     token: refreshToken
-    //   },
-    //   create: {
-    //     token: refreshToken,
-    //     user_id: userId
-    //   },
-    //   where: {
-    //     user_id: userId
-    //   }
-    // });
-
-    await prisma.refreshToken.create({
-      data: {
+    await prisma.refreshToken.upsert({
+      update: {
+        token: refreshToken
+      },
+      create: {
         token: refreshToken,
+        user_id: userId
+      },
+      where: {
         user_id: userId
       }
     });
+
+    // await prisma.refreshToken.create({
+    //   data: {
+    //     token: refreshToken,
+    //     user_id: userId
+    //   }
+    // });
 
     return refreshToken;
   }
