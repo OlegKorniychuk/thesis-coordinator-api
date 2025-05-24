@@ -67,7 +67,17 @@ class SupervisorService {
       skip,
       take,
       include: {
-        student: true
+        student: true,
+        topic: true
+      }
+    });
+  }
+
+  public async getAllBachelors() {
+    return await prisma.bachelor.findMany({
+      include: {
+        student: true,
+        topic: true
       }
     });
   }
