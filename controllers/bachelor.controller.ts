@@ -8,6 +8,8 @@ import diplomaCycleService from 'services/diplomaCycle/diplomaCycle.service';
 import studentService from 'services/student/student.service';
 import {ValidateCreateStudent} from 'services/student/student.validate';
 import authService from 'services/auth/auth.service';
+import {ValidateUpdateBachelor} from 'services/bachelor/bachelor.validate';
+import supervisorService from 'services/supervisor/supervisor.service';
 
 const createBachelor = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const studentData = ValidateCreateStudent.parse(req.body);
@@ -77,4 +79,34 @@ const getBachelors = catchError(
   }
 );
 
-export {createBachelor, getBachelorFullData, getBachelors};
+const updateBachelor = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const bachelorId: string = req.params.bachelorId;
+    const updateData = ValidateUpdateBachelor.parse(req.body);
+
+    if (updateData.supervisorId) {
+      const supervisorWithLoad = await supervisorService.getSupervisorWithLoad(
+        updateData.supervisorId
+      );
+
+      if (supervisorWithLoad._count.bachelors === supervisorWithLoad.max_load)
+        return next(
+          new AppError(
+            'Неможливо оновити дані бакалавра - обраний керівник не має вільних місць',
+            400
+          )
+        );
+    }
+
+    const updatedBachelor = await bachelorService.updateBachelor({bachelorId, ...updateData});
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        updatedBachelor
+      }
+    });
+  }
+);
+
+export {createBachelor, getBachelorFullData, getBachelors, updateBachelor};

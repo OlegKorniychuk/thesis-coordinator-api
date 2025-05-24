@@ -22,7 +22,15 @@ router
     bachelorController.createBachelor
   );
 
-router.route('/:bachelorId').get(restrictToPhases(), bachelorController.getBachelorFullData);
+router
+  .route('/:bachelorId')
+  .get(restrictToPhases(), bachelorController.getBachelorFullData)
+  .patch(
+    checkForBody,
+    restrictToPhases(),
+    restrictToRoles([UserRole.admin]),
+    bachelorController.updateBachelor
+  );
 
 router.use('/:bachelorId/supervision-requests', supervisionRequestsRouter);
 router.use('/:bachelorId/topics', topicRouter);

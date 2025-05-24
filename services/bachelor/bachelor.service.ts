@@ -85,6 +85,54 @@ class SupervisorService {
   public async getBachelorsCount(): Promise<number> {
     return await prisma.bachelor.count();
   }
+
+  public async updateBachelor(updateData: {
+    bachelorId: string;
+    supervisorId?: string;
+    firstName?: string;
+    secondName?: string;
+    lastName?: string;
+    group?: string;
+    specialty?: string;
+    academicProgram?: string;
+  }) {
+    const {
+      bachelorId,
+      supervisorId,
+      firstName,
+      secondName,
+      lastName,
+      group,
+      specialty,
+      academicProgram
+    } = updateData;
+
+    const studentData: any = {};
+    if (firstName) studentData.first_name = firstName;
+    if (secondName) studentData.second_name = secondName;
+    if (lastName) studentData.last_name = lastName;
+    if (group) studentData.group = group;
+    if (specialty) studentData.specialty = specialty;
+    if (academicProgram) studentData.academic_program = academicProgram;
+
+    const bachelorData: Prisma.BachelorUpdateInput = {};
+    if (supervisorId) bachelorData.supervisor = {connect: {supervisor_id: supervisorId}};
+    if (Object.keys(studentData).length > 0) {
+      bachelorData.student = {
+        update: studentData
+      };
+    }
+
+    return await prisma.bachelor.update({
+      where: {
+        bachelor_id: bachelorId
+      },
+      data: bachelorData,
+      include: {
+        student: true
+      }
+    });
+  }
 }
 
 export default new SupervisorService();
