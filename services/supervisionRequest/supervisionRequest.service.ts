@@ -19,16 +19,10 @@ class SupervisionRequestService {
     });
   }
 
-  public async getBachelorsSupervisionRequestToSupervisor(
-    bachelorId: string,
-    supervisorId: string
-  ): Promise<SupervisionRequest | null> {
-    return await prisma.supervisionRequest.findUnique({
+  public async getBachelorsSupervisionRequest(bachelorId: string): Promise<SupervisionRequest[]> {
+    return await prisma.supervisionRequest.findMany({
       where: {
-        bachelor_id_supervisor_id: {
-          bachelor_id: bachelorId,
-          supervisor_id: supervisorId
-        }
+        bachelor_id: bachelorId
       }
     });
   }

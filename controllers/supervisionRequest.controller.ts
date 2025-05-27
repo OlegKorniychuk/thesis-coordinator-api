@@ -13,22 +13,14 @@ const createSupervisionRequest = catchError(
     const bachelorId: string = req.params.bachelorId;
     const data: Prisma.SupervisionRequestUncheckedCreateInput =
       ValidateCreateSupervisionRequest.parse({bachelor_id: bachelorId, ...req.body});
-    const existingRequest =
-      await supervisionRequestService.getBachelorsSupervisionRequestToSupervisor(
-        data.bachelor_id,
-        data.supervisor_id
-      );
+    const previousRequests = await supervisionRequestService.getBachelorsSupervisionRequests(
+      data.bachelor_id
+    );
 
-    if (existingRequest && existingRequest.status !== SupervisionRequestStatus.rejected)
+    if (previousRequests.some(request => request.status !== SupervisionRequestStatus.rejected))
       return next(
         new AppError('Неможливо надіслати повторний запит - попередній не був відхилений!', 400)
       );
-
-    if (existingRequest) {
-      await supervisionRequestService.deleteSupervisionRequest(
-        existingRequest.supervision_request_id
-      );
-    }
 
     const newSupervisionRequest = await supervisionRequestService.createSupervisionRequest(data);
 
