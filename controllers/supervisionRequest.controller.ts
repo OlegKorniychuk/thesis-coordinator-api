@@ -18,9 +18,7 @@ const createSupervisionRequest = catchError(
     );
 
     if (previousRequests.some(request => request.status !== SupervisionRequestStatus.rejected))
-      return next(
-        new AppError('Неможливо надіслати повторний запит - попередній не був відхилений!', 400)
-      );
+      return next(new AppError('Неможливо надіслати запит - попередній не був відхилений!', 400));
 
     const newSupervisionRequest = await supervisionRequestService.createSupervisionRequest(data);
 
@@ -89,6 +87,7 @@ const rejectSupervisionRequest = catchError(
       await supervisionRequestService.updateSupervisionRequestStatus(
         supervisionRequestId,
         SupervisionRequestStatus.rejected,
+        undefined,
         comment
       );
 

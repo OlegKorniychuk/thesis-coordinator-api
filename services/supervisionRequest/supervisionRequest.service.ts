@@ -38,13 +38,15 @@ class SupervisionRequestService {
   public async updateSupervisionRequestStatus(
     id: string,
     status: SupervisionRequestStatus,
-    comment?: string
+    comment?: string,
+    supervisorsComment?: string
   ): Promise<SupervisionRequest> {
     const updateData: Prisma.SupervisionRequestUpdateInput = {
       status
     };
 
     if (comment) updateData.comment = comment;
+    if (supervisorsComment) updateData.supervisors_comment = supervisorsComment;
 
     return await prisma.supervisionRequest.update({
       data: updateData,

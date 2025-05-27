@@ -125,6 +125,7 @@ model SupervisionRequest {
   bachelor_id            String @db.Uuid
   supervisor_id          String @db.Uuid
   comment                String?
+  supervisors_comment    String?
   proposed_topic         String?
   status                 SupervisionRequestStatus @default(pending)
 
