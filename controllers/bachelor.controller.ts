@@ -109,4 +109,18 @@ const updateBachelor = catchError(
   }
 );
 
-export {createBachelor, getBachelorFullData, getBachelors, updateBachelor};
+const getBachelorByUserId = catchError(
+  async (req: Request, res: Response, enxt: NextFunction): Promise<void> => {
+    const userId: string = req.params['userId'];
+    const bachelor = await bachelorService.getBachelorByUserId(userId);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        bachelor
+      }
+    });
+  }
+);
+
+export {createBachelor, getBachelorFullData, getBachelors, updateBachelor, getBachelorByUserId};

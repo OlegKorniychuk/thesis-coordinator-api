@@ -133,6 +133,24 @@ class SupervisorService {
       }
     });
   }
+
+  public async getBachelorByUserId(userId: string) {
+    return await prisma.bachelor.findUniqueOrThrow({
+      where: {
+        user_id: userId
+      },
+      include: {
+        topic: true,
+        student: true,
+        supervision_requests: true,
+        supervisor: {
+          include: {
+            teacher: true
+          }
+        }
+      }
+    });
+  }
 }
 
 export default new SupervisorService();
