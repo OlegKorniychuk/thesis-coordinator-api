@@ -28,7 +28,7 @@ const confirmTopic = catchError(async (req: Request, res: Response, next: NextFu
   });
 });
 
-const createTopic = catchError(
+const proposeTopic = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const bachelorId: string = req.params.bachelorId;
     const data: Prisma.TopicUncheckedCreateInput = ValidateCreateTopic.parse({
@@ -94,4 +94,4 @@ const rejectTopic = catchError(
   }
 );
 
-export {confirmTopic, createTopic, acceptTopic, rejectTopic};
+export {confirmTopic, proposeTopic, acceptTopic, rejectTopic};
