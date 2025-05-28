@@ -110,7 +110,7 @@ const updateBachelor = catchError(
 );
 
 const getBachelorByUserId = catchError(
-  async (req: Request, res: Response, enxt: NextFunction): Promise<void> => {
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const userId: string = req.params['userId'];
     const bachelor = await bachelorService.getBachelorByUserId(userId);
 

@@ -19,6 +19,11 @@ router
     restrictToPhases([DiplomaCyclePhase.preparation]),
     supervisorController.createSupervisor
   );
+
+router
+  .route('/by-user-id/:userId')
+  .get(restrictToPhases(), supervisorController.getSupervisorByUserId);
+
 router
   .route('/:supervisorId/change-max-load')
   .patch(

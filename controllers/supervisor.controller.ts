@@ -92,4 +92,18 @@ const getSupervisorsWithLoad = catchError(
   }
 );
 
-export {createSupervisor, changeSupervisorMaxLoad, getSupervisorsWithLoad};
+const getSupervisorByUserId = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const userId: string = req.params['userId'];
+    const supervisor = await supervisorService.getSupervisorByUserId(userId);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        supervisor
+      }
+    });
+  }
+);
+
+export {createSupervisor, changeSupervisorMaxLoad, getSupervisorsWithLoad, getSupervisorByUserId};
