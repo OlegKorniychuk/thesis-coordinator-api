@@ -63,7 +63,11 @@ class SupervisorService {
       include: {
         teacher: true,
         supervisors_info: true,
-        _count: {}
+        _count: {
+          select: {
+            bachelors: true
+          }
+        }
       }
     });
   }

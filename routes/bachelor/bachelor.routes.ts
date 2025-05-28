@@ -33,6 +33,9 @@ router
   );
 
 router.route('/by-user-id/:userId').get(restrictToPhases(), bachelorController.getBachelorByUserId);
+router
+  .route('/by-supervisor-id/:supervisorId')
+  .get(restrictToPhases(), bachelorController.getBachelorsOfSupervisor);
 
 router.use('/:bachelorId/supervision-requests', supervisionRequestsRouter);
 router.use('/:bachelorId/topics', topicRouter);

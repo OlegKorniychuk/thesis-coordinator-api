@@ -123,4 +123,27 @@ const getBachelorByUserId = catchError(
   }
 );
 
-export {createBachelor, getBachelorFullData, getBachelors, updateBachelor, getBachelorByUserId};
+const getBachelorsOfSupervisor = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const supervisorId: string = req.params.sueprvisorId;
+
+    const bachelors = await bachelorService.getBachelorsBySupervisorId(supervisorId);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        results: bachelors.length,
+        bachelors
+      }
+    });
+  }
+);
+
+export {
+  createBachelor,
+  getBachelorFullData,
+  getBachelors,
+  updateBachelor,
+  getBachelorByUserId,
+  getBachelorsOfSupervisor
+};

@@ -1,5 +1,5 @@
 import {IBachelorFullData} from '@interfaces/bachelorFullData.interface';
-import {Prisma, Bachelor} from '@prisma/client';
+import {Prisma, Bachelor, Supervisor} from '@prisma/client';
 import prisma from 'prisma/prisma';
 
 class SupervisorService {
@@ -148,6 +148,20 @@ class SupervisorService {
             teacher: true
           }
         }
+      }
+    });
+  }
+
+  public async getBachelorsBySupervisorId(supervisorId: string) {
+    return await prisma.bachelor.findMany({
+      where: {
+        supervisor_id: {
+          equals: supervisorId
+        }
+      },
+      include: {
+        student: true,
+        topic: true
       }
     });
   }
