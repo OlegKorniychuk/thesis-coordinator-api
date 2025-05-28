@@ -1,4 +1,4 @@
-import {Prisma, TopicStatus} from '@prisma/client';
+import {Prisma, Topic, TopicStatus} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
@@ -39,6 +39,11 @@ const proposeTopic = catchError(
 
     if (!bachelor.supervisor_id)
       return next(new AppError('Дипломник без керівника не може створити тему!', 400));
+
+    const topic: Topic | null = await topicService.getBachelorsTopic(bachelorId);
+    const restrictedStatuses: TopicStatus[] = [TopicStatus.confirmed, TopicStatus.on_confirmation];
+    if (topic && restrictedStatuses.includes(topic.status))
+      return next(new AppError('Неможливо змінити тему після того, як її затвердив керівник', 400));
 
     const newTopic = await topicService.createTopic(data);
 

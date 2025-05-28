@@ -21,6 +21,14 @@ class TopicService {
     });
   }
 
+  public async getBachelorsTopic(bachelorId: string): Promise<Topic | null> {
+    return prisma.topic.findUnique({
+      where: {
+        bachelor_id: bachelorId
+      }
+    });
+  }
+
   public async getTopicStatus(id: string): Promise<TopicStatus> {
     const res = await prisma.topic.findUniqueOrThrow({
       where: {
