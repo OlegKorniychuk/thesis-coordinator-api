@@ -125,9 +125,10 @@ const getBachelorByUserId = catchError(
 
 const getBachelorsOfSupervisor = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const supervisorId: string = req.params.sueprvisorId;
+    const supervisorId: string = req.params.supervisorId;
 
     const bachelors = await bachelorService.getBachelorsBySupervisorId(supervisorId);
+    console.log('SupervisorId:', supervisorId);
 
     res.status(200).json({
       status: 'success',

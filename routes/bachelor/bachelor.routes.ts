@@ -18,7 +18,7 @@ router
   .post(
     restrictToRoles([UserRole.admin]),
     checkForBody,
-    restrictToPhases([DiplomaCyclePhase.preparation]),
+    restrictToPhases(),
     bachelorController.createBachelor
   );
 
