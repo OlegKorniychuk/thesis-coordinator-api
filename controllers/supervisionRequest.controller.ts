@@ -59,10 +59,10 @@ const acceptSupervisionRequest = catchError(
         supervisionRequestId,
         SupervisionRequestStatus.accepted
       );
-    await supervisionRequestService.deleteSupervisionRequestsOnAccepting(
-      supervisionRequestId,
-      bachelorId
-    );
+    // await supervisionRequestService.deleteSupervisionRequestsOnAccepting(
+    //   supervisionRequestId,
+    //   bachelorId
+    // );
 
     res.status(200).json({
       status: 'success',
