@@ -2,6 +2,7 @@ import {Prisma, SupervisionRequestStatus} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
+import bachelorService from 'services/bachelor/bachelor.service';
 import supervisionRequestService from 'services/supervisionRequest/supervisionRequest.service';
 import {
   ValidateCreateSupervisionRequest,
@@ -59,6 +60,11 @@ const acceptSupervisionRequest = catchError(
         supervisionRequestId,
         SupervisionRequestStatus.accepted
       );
+
+    await bachelorService.updateBachelor({
+      bachelorId: bachelorId,
+      supervisorId: supervisionRequest.supervisor_id
+    });
     // await supervisionRequestService.deleteSupervisionRequestsOnAccepting(
     //   supervisionRequestId,
     //   bachelorId
