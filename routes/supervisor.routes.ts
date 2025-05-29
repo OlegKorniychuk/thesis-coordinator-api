@@ -46,4 +46,12 @@ router
     supervisorInfoController.updateSupervisorInfo
   );
 
+router
+  .route('/:supervisorId/supervision-requests')
+  .get(
+    restrictToPhases(),
+    restrictToRoles([UserRole.supervisor]),
+    supervisorController.getSupervisorsSupervisionRequests
+  );
+
 export default router;

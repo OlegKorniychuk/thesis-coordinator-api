@@ -77,6 +77,23 @@ class SupervisionRequestService {
       }
     });
   }
+
+  public async getSupervisorsSupervisionRequests(supervisorId: string) {
+    return await prisma.supervisionRequest.findMany({
+      where: {
+        supervisor_id: {
+          equals: supervisorId
+        }
+      },
+      include: {
+        bachelor: {
+          include: {
+            student: true
+          }
+        }
+      }
+    });
+  }
 }
 
 export default new SupervisionRequestService();

@@ -10,6 +10,7 @@ import {
 } from 'services/supervisor/supervisor.validate';
 import teacherService from 'services/teacher/teacher.service';
 import authService from 'services/auth/auth.service';
+import supervisionRequestService from 'services/supervisionRequest/supervisionRequest.service';
 
 const createSupervisor = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -106,4 +107,27 @@ const getSupervisorByUserId = catchError(
   }
 );
 
-export {createSupervisor, changeSupervisorMaxLoad, getSupervisorsWithLoad, getSupervisorByUserId};
+const getSupervisorsSupervisionRequests = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const supervisorId: string = req.params.supervisorId;
+
+    const supervisionRequests =
+      await supervisionRequestService.getSupervisorsSupervisionRequests(supervisorId);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        results: supervisionRequests.length,
+        supervisionRequests
+      }
+    });
+  }
+);
+
+export {
+  createSupervisor,
+  changeSupervisorMaxLoad,
+  getSupervisorsWithLoad,
+  getSupervisorByUserId,
+  getSupervisorsSupervisionRequests
+};
