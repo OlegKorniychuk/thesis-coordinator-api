@@ -19,16 +19,10 @@ class SupervisionRequestService {
     });
   }
 
-  public async getBachelorsSupervisionRequestToSupervisor(
-    bachelorId: string,
-    supervisorId: string
-  ): Promise<SupervisionRequest | null> {
-    return await prisma.supervisionRequest.findUnique({
+  public async getBachelorsSupervisionRequest(bachelorId: string): Promise<SupervisionRequest[]> {
+    return await prisma.supervisionRequest.findMany({
       where: {
-        bachelor_id_supervisor_id: {
-          bachelor_id: bachelorId,
-          supervisor_id: supervisorId
-        }
+        bachelor_id: bachelorId
       }
     });
   }
@@ -44,13 +38,15 @@ class SupervisionRequestService {
   public async updateSupervisionRequestStatus(
     id: string,
     status: SupervisionRequestStatus,
-    comment?: string
+    comment?: string,
+    supervisorsComment?: string
   ): Promise<SupervisionRequest> {
     const updateData: Prisma.SupervisionRequestUpdateInput = {
       status
     };
 
     if (comment) updateData.comment = comment;
+    if (supervisorsComment) updateData.supervisors_comment = supervisorsComment;
 
     return await prisma.supervisionRequest.update({
       data: updateData,
@@ -78,6 +74,23 @@ class SupervisionRequestService {
     return await prisma.supervisionRequest.findUniqueOrThrow({
       where: {
         supervision_request_id: id
+      }
+    });
+  }
+
+  public async getSupervisorsSupervisionRequests(supervisorId: string) {
+    return await prisma.supervisionRequest.findMany({
+      where: {
+        supervisor_id: {
+          equals: supervisorId
+        }
+      },
+      include: {
+        bachelor: {
+          include: {
+            student: true
+          }
+        }
       }
     });
   }

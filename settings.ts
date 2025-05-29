@@ -12,6 +12,9 @@ if (!parsedPort) throw new Error('Invalid .env format: PORT must be an integer')
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error('Invalid .env format: DATABASE_URL missing');
 
+const forntendUrl = process.env.FRONTEND_URL;
+if (!forntendUrl) throw new Error('Invalid .env format: FRONTEND_URL missing');
+
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 if (!accessTokenSecret) throw new Error('Invalid .env format: ACCESS_TOKEN_SECRET missing');
 
@@ -34,6 +37,7 @@ if (!time)
 const settings: EnvironmentSettings = {
   port: parsedPort,
   databaseUrl: databaseUrl,
+  forntendUrl: forntendUrl,
   accessTokenSecret: accessTokenSecret,
   refreshTokenSecret: refreshTokenSecret,
   accessTokenExpiresIn: accessTokenExpiresIn as ms.StringValue,

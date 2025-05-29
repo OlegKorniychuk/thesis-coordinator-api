@@ -8,7 +8,7 @@ import {restrictToRoles} from 'middleware/restrictToRoles.middleware';
 
 const router = express.Router();
 
-router.route('/*splat').all(protect);
+router.use(protect);
 
 router
   .route('/')
@@ -19,6 +19,11 @@ router
     restrictToPhases([DiplomaCyclePhase.preparation]),
     supervisorController.createSupervisor
   );
+
+router
+  .route('/by-user-id/:userId')
+  .get(restrictToPhases(), supervisorController.getSupervisorByUserId);
+
 router
   .route('/:supervisorId/change-max-load')
   .patch(
@@ -39,6 +44,14 @@ router
     checkForBody,
     restrictToPhases([DiplomaCyclePhase.preparation]),
     supervisorInfoController.updateSupervisorInfo
+  );
+
+router
+  .route('/:supervisorId/supervision-requests')
+  .get(
+    restrictToPhases(),
+    restrictToRoles([UserRole.supervisor]),
+    supervisorController.getSupervisorsSupervisionRequests
   );
 
 export default router;

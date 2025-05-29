@@ -9,11 +9,11 @@ const router = express.Router({mergeParams: true});
 
 router
   .route('/')
-  .post(
+  .patch(
     restrictToRoles([UserRole.bachelor]),
     checkForBody,
     restrictToPhases([DiplomaCyclePhase.supervisor_selection, DiplomaCyclePhase.topic_selection]),
-    topicController.createTopic
+    topicController.proposeTopic
   );
 
 router

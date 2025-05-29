@@ -1,5 +1,5 @@
 import {IBachelorFullData} from '@interfaces/bachelorFullData.interface';
-import {Prisma, Bachelor} from '@prisma/client';
+import {Prisma, Bachelor, Supervisor} from '@prisma/client';
 import prisma from 'prisma/prisma';
 
 class SupervisorService {
@@ -51,6 +51,117 @@ class SupervisorService {
       },
       where: {
         bachelor_id: id
+      }
+    });
+  }
+
+  public async getPaginatedBachelors(page?: number, resultsPerPage?: number) {
+    let skip: number = 0;
+    let take: number = 10;
+    if (page && resultsPerPage) {
+      skip = resultsPerPage * (page - 1);
+      take = resultsPerPage;
+    }
+
+    return await prisma.bachelor.findMany({
+      skip,
+      take,
+      include: {
+        student: true,
+        topic: true
+      }
+    });
+  }
+
+  public async getAllBachelors() {
+    return await prisma.bachelor.findMany({
+      include: {
+        student: true,
+        topic: true
+      }
+    });
+  }
+
+  public async getBachelorsCount(): Promise<number> {
+    return await prisma.bachelor.count();
+  }
+
+  public async updateBachelor(updateData: {
+    bachelorId: string;
+    supervisorId?: string;
+    firstName?: string;
+    secondName?: string;
+    lastName?: string;
+    group?: string;
+    specialty?: string;
+    academicProgram?: string;
+  }) {
+    const {
+      bachelorId,
+      supervisorId,
+      firstName,
+      secondName,
+      lastName,
+      group,
+      specialty,
+      academicProgram
+    } = updateData;
+
+    const studentData: any = {};
+    if (firstName) studentData.first_name = firstName;
+    if (secondName) studentData.second_name = secondName;
+    if (lastName) studentData.last_name = lastName;
+    if (group) studentData.group = group;
+    if (specialty) studentData.specialty = specialty;
+    if (academicProgram) studentData.academic_program = academicProgram;
+
+    const bachelorData: Prisma.BachelorUpdateInput = {};
+    if (supervisorId) bachelorData.supervisor = {connect: {supervisor_id: supervisorId}};
+    if (Object.keys(studentData).length > 0) {
+      bachelorData.student = {
+        update: studentData
+      };
+    }
+
+    return await prisma.bachelor.update({
+      where: {
+        bachelor_id: bachelorId
+      },
+      data: bachelorData,
+      include: {
+        student: true
+      }
+    });
+  }
+
+  public async getBachelorByUserId(userId: string) {
+    return await prisma.bachelor.findUniqueOrThrow({
+      where: {
+        user_id: userId
+      },
+      include: {
+        topic: true,
+        student: true,
+        supervision_requests: true,
+        supervisor: {
+          include: {
+            teacher: true
+          }
+        }
+      }
+    });
+  }
+
+  public async getBachelorsBySupervisorId(supervisorId: string) {
+    return await prisma.bachelor.findMany({
+      where: {
+        supervisor_id: {
+          equals: supervisorId
+        }
+      },
+      include: {
+        student: true,
+        topic: true
       }
     });
   }

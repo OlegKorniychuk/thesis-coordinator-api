@@ -88,13 +88,22 @@ class AuthService {
       }
     });
 
+    // await prisma.refreshToken.create({
+    //   data: {
+    //     token: refreshToken,
+    //     user_id: userId
+    //   }
+    // });
+
     return refreshToken;
   }
 
-  public async invalidateRefreshToken(token: string): Promise<RefreshToken> {
-    return await prisma.refreshToken.delete({
+  public async invalidateRefreshToken(userId: string): Promise<Prisma.BatchPayload> {
+    return await prisma.refreshToken.deleteMany({
       where: {
-        token: token
+        user_id: {
+          equals: userId
+        }
       }
     });
   }
@@ -114,6 +123,18 @@ class AuthService {
 
     const {password_plain, password_hash, ...safeUser} = user;
     return safeUser;
+  }
+
+  public async getUserById(id: string): Promise<SafeUser> {
+    return await prisma.user.findUniqueOrThrow({
+      where: {
+        user_id: id
+      },
+      omit: {
+        password_plain: true,
+        password_hash: true
+      }
+    });
   }
 }
 

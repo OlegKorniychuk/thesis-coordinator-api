@@ -19,12 +19,12 @@ const logIn = catchError(async (req: Request, res: Response, next: NextFunction)
   const refreshToken = await authService.generateRefreshToken(user.user_id, user.role);
 
   res.cookie('accessToken', accessToken, {
-    secure: true,
+    secure: false,
     httpOnly: false,
     sameSite: 'strict'
   });
   res.cookie('refreshToken', refreshToken, {
-    secure: true,
+    secure: false,
     httpOnly: false,
     sameSite: 'strict'
   });
@@ -37,10 +37,25 @@ const logIn = catchError(async (req: Request, res: Response, next: NextFunction)
   });
 });
 
+const getMyData = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log(req['user']);
+    const userId: string = req['user'].user_id;
+    const user: SafeUser = await authService.getUserById(userId);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  }
+);
+
 const refreshAccessToken = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const refreshToken = req.cookies.refreshToken;
 
-  if (!refreshToken) return next(new AppError('Refresh token missing!', 400));
+  if (!refreshToken) return next(new AppError('Refresh token missing!', 401));
 
   try {
     const refreshPayload = jwt.verify(refreshToken, settings.refreshTokenSecret) as IUserPayload;
@@ -57,7 +72,6 @@ const refreshAccessToken = catchError(async (req: Request, res: Response, next: 
     res.status(204).json({});
   } catch (err) {
     res.clearCookie('refreshToken');
-    console.log(refreshToken);
     if (err.name === 'TokenExpiredError') {
       await authService.invalidateRefreshToken(refreshToken);
       return next(new AppError('Термін дії вашої сесії сплив, потрібно авторизуватися.', 401));
@@ -74,7 +88,7 @@ const logout = catchError(
 
     if (!refreshToken) return next(new AppError('Refresh token missing!', 400));
 
-    await authService.invalidateRefreshToken(refreshToken);
+    await authService.invalidateRefreshToken(req['user'].user_id);
     res.clearCookie('refreshToken');
     res.clearCookie('accessToken');
 
@@ -82,4 +96,4 @@ const logout = catchError(
   }
 );
 
-export {logIn, refreshAccessToken, logout};
+export {logIn, refreshAccessToken, logout, getMyData};

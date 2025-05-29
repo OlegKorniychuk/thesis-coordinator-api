@@ -2,6 +2,7 @@ import {Prisma, SupervisionRequestStatus} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
+import bachelorService from 'services/bachelor/bachelor.service';
 import supervisionRequestService from 'services/supervisionRequest/supervisionRequest.service';
 import {
   ValidateCreateSupervisionRequest,
@@ -13,22 +14,12 @@ const createSupervisionRequest = catchError(
     const bachelorId: string = req.params.bachelorId;
     const data: Prisma.SupervisionRequestUncheckedCreateInput =
       ValidateCreateSupervisionRequest.parse({bachelor_id: bachelorId, ...req.body});
-    const existingRequest =
-      await supervisionRequestService.getBachelorsSupervisionRequestToSupervisor(
-        data.bachelor_id,
-        data.supervisor_id
-      );
+    const previousRequests = await supervisionRequestService.getBachelorsSupervisionRequests(
+      data.bachelor_id
+    );
 
-    if (existingRequest && existingRequest.status !== SupervisionRequestStatus.rejected)
-      return next(
-        new AppError('Неможливо надіслати повторний запит - попередній не був відхилений!', 400)
-      );
-
-    if (existingRequest) {
-      await supervisionRequestService.deleteSupervisionRequest(
-        existingRequest.supervision_request_id
-      );
-    }
+    if (previousRequests.some(request => request.status !== SupervisionRequestStatus.rejected))
+      return next(new AppError('Неможливо надіслати запит - попередній не був відхилений!', 400));
 
     const newSupervisionRequest = await supervisionRequestService.createSupervisionRequest(data);
 
@@ -69,10 +60,15 @@ const acceptSupervisionRequest = catchError(
         supervisionRequestId,
         SupervisionRequestStatus.accepted
       );
-    await supervisionRequestService.deleteSupervisionRequestsOnAccepting(
-      supervisionRequestId,
-      bachelorId
-    );
+
+    await bachelorService.updateBachelor({
+      bachelorId: bachelorId,
+      supervisorId: supervisionRequest.supervisor_id
+    });
+    // await supervisionRequestService.deleteSupervisionRequestsOnAccepting(
+    //   supervisionRequestId,
+    //   bachelorId
+    // );
 
     res.status(200).json({
       status: 'success',
@@ -97,6 +93,7 @@ const rejectSupervisionRequest = catchError(
       await supervisionRequestService.updateSupervisionRequestStatus(
         supervisionRequestId,
         SupervisionRequestStatus.rejected,
+        undefined,
         comment
       );
 

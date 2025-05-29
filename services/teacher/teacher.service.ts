@@ -24,6 +24,10 @@ class TeacherService {
       }
     });
   }
+
+  public async getTeachersCount(): Promise<number> {
+    return await prisma.teacher.count();
+  }
 }
 
 export default new TeacherService();

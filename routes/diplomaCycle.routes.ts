@@ -7,7 +7,7 @@ import {restrictToRoles} from 'middleware/restrictToRoles.middleware';
 
 const router = express.Router();
 
-router.route('/*splat').all(protect);
+router.use(protect);
 
 router.route('/').post(restrictToRoles([UserRole.admin]), diplomaCycleController.startNewCycle);
 router
@@ -17,5 +17,6 @@ router
     restrictToPhases([DiplomaCyclePhase.post_cycle]),
     diplomaCycleController.endCurrentCycle
   );
+router.route('/get-current').get(diplomaCycleController.getCurrentCycle);
 
 export default router;

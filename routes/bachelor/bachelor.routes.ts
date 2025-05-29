@@ -10,18 +10,32 @@ import {restrictToRoles} from 'middleware/restrictToRoles.middleware';
 
 const router = express.Router();
 
-router.route('/*splat').all(protect);
+router.use(protect);
 
 router
   .route('/')
+  .get(restrictToRoles([UserRole.admin, UserRole.supervisor]), bachelorController.getBachelors)
   .post(
     restrictToRoles([UserRole.admin]),
     checkForBody,
-    restrictToPhases([DiplomaCyclePhase.preparation]),
+    restrictToPhases(),
     bachelorController.createBachelor
   );
 
-router.route('/:bachelorId').get(restrictToPhases(), bachelorController.getBachelorFullData);
+router
+  .route('/:bachelorId')
+  .get(restrictToPhases(), bachelorController.getBachelorFullData)
+  .patch(
+    checkForBody,
+    restrictToPhases(),
+    restrictToRoles([UserRole.admin]),
+    bachelorController.updateBachelor
+  );
+
+router.route('/by-user-id/:userId').get(restrictToPhases(), bachelorController.getBachelorByUserId);
+router
+  .route('/by-supervisor-id/:supervisorId')
+  .get(restrictToPhases(), bachelorController.getBachelorsOfSupervisor);
 
 router.use('/:bachelorId/supervision-requests', supervisionRequestsRouter);
 router.use('/:bachelorId/topics', topicRouter);

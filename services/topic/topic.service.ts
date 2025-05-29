@@ -3,7 +3,30 @@ import prisma from 'prisma/prisma';
 
 class TopicService {
   public async createTopic(data: Prisma.TopicUncheckedCreateInput): Promise<Topic> {
-    return await prisma.topic.create({data});
+    const {name, comment, bachelor_id} = data;
+    return await prisma.topic.upsert({
+      where: {
+        bachelor_id: bachelor_id
+      },
+      update: {
+        name: name,
+        comment: comment,
+        status: TopicStatus.pending
+      },
+      create: {
+        bachelor_id: bachelor_id,
+        name: name,
+        comment: comment
+      }
+    });
+  }
+
+  public async getBachelorsTopic(bachelorId: string): Promise<Topic | null> {
+    return prisma.topic.findUnique({
+      where: {
+        bachelor_id: bachelorId
+      }
+    });
   }
 
   public async getTopicStatus(id: string): Promise<TopicStatus> {

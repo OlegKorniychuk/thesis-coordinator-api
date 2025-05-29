@@ -6,3 +6,4 @@ export * as topicController from './topicController';
 export * as supervisionRequestController from './supervisionRequest.controller';
 export * as supervisorInfoController from './supervisorInfoController';
 export * as authController from './auth.controller';
+export * as archivedBachelorsController from './archivedBachelors.controller';

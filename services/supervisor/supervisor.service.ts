@@ -39,6 +39,38 @@ class SupervisorService {
       }
     });
   }
+
+  public async getSupervisorWithLoad(supervisorId: string) {
+    return await prisma.supervisor.findUniqueOrThrow({
+      where: {
+        supervisor_id: supervisorId
+      },
+      include: {
+        _count: {
+          select: {
+            bachelors: true
+          }
+        }
+      }
+    });
+  }
+
+  public async getSupervisorByUserId(userId: string) {
+    return await prisma.supervisor.findUniqueOrThrow({
+      where: {
+        user_id: userId
+      },
+      include: {
+        teacher: true,
+        supervisors_info: true,
+        _count: {
+          select: {
+            bachelors: true
+          }
+        }
+      }
+    });
+  }
 }
 
 export default new SupervisorService();

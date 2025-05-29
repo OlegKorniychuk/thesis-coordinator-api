@@ -1,4 +1,4 @@
-import {Prisma, TopicStatus} from '@prisma/client';
+import {Prisma, Topic, TopicStatus} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
@@ -28,7 +28,7 @@ const confirmTopic = catchError(async (req: Request, res: Response, next: NextFu
   });
 });
 
-const createTopic = catchError(
+const proposeTopic = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const bachelorId: string = req.params.bachelorId;
     const data: Prisma.TopicUncheckedCreateInput = ValidateCreateTopic.parse({
@@ -39,6 +39,11 @@ const createTopic = catchError(
 
     if (!bachelor.supervisor_id)
       return next(new AppError('Дипломник без керівника не може створити тему!', 400));
+
+    const topic: Topic | null = await topicService.getBachelorsTopic(bachelorId);
+    const restrictedStatuses: TopicStatus[] = [TopicStatus.confirmed, TopicStatus.on_confirmation];
+    if (topic && restrictedStatuses.includes(topic.status))
+      return next(new AppError('Неможливо змінити тему після того, як її затвердив керівник', 400));
 
     const newTopic = await topicService.createTopic(data);
 
@@ -94,4 +99,4 @@ const rejectTopic = catchError(
   }
 );
 
-export {confirmTopic, createTopic, acceptTopic, rejectTopic};
+export {confirmTopic, proposeTopic, acceptTopic, rejectTopic};

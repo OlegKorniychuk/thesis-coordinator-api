@@ -5,6 +5,7 @@ import supervisorRouter from './supervisor.routes';
 import bachelorRoutes from './bachelor/bachelor.routes';
 import topicRouter from './bachelor/topic.routes';
 import authRouter from './auth.routes';
+import archivedBachelorsRouter from './archivedBachelors.routes';
 
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.use('/supervisors', supervisorRouter);
 router.use('/bachelors', bachelorRoutes);
 router.use('/topics', topicRouter);
 router.use('/auth', authRouter);
+router.use('/archive', archivedBachelorsRouter);
 
 export default router;
