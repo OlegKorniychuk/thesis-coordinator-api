@@ -165,6 +165,25 @@ class SupervisorService {
       }
     });
   }
+
+  public async getBachelorsWithPasswords() {
+    return prisma.bachelor.findMany({
+      select: {
+        student: true,
+        user: {
+          select: {
+            password_plain: true,
+            login: true
+          }
+        }
+      },
+      orderBy: {
+        student: {
+          group: 'asc'
+        }
+      }
+    });
+  }
 }
 
 export default new SupervisorService();

@@ -10,6 +10,8 @@ import {ValidateCreateStudent} from 'services/student/student.validate';
 import authService from 'services/auth/auth.service';
 import {ValidateUpdateBachelor} from 'services/bachelor/bachelor.validate';
 import supervisorService from 'services/supervisor/supervisor.service';
+import {StudentUser} from '@interfaces/namedUser.interface';
+import Excel from 'exceljs';
 
 const createBachelor = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const studentData = ValidateCreateStudent.parse(req.body);
@@ -140,11 +142,42 @@ const getBachelorsOfSupervisor = catchError(
   }
 );
 
+const getBachelorsPasswords = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const bachelorsWithPasswords = await bachelorService.getBachelorsWithPasswords();
+    const formattedBachelors: StudentUser[] = bachelorsWithPasswords.map(bachelor => ({
+      fullName: `${bachelor.student.last_name} ${bachelor.student.first_name} ${bachelor.student.second_name}`,
+      login: bachelor.user.login,
+      password: bachelor.user.password_plain,
+      group: bachelor.student.group
+    }));
+
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet('Дані Студентів');
+
+    worksheet.columns = [
+      {header: 'ПІБ', key: 'fullName'},
+      {header: 'Група', key: 'group'},
+      {header: 'Логін', key: 'login'},
+      {header: 'Пароль', key: 'password'}
+    ];
+
+    formattedBachelors.forEach(item => worksheet.addRow(item));
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+    res.setHeader('Content-Disposition', 'attachment; filename="StudentLogins.xlsx"');
+
+    await workbook.xlsx.write(res);
+    res.end();
+  }
+);
+
 export {
   createBachelor,
   getBachelorFullData,
   getBachelors,
   updateBachelor,
   getBachelorByUserId,
-  getBachelorsOfSupervisor
+  getBachelorsOfSupervisor,
+  getBachelorsPasswords
 };

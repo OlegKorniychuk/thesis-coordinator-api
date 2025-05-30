@@ -11,6 +11,8 @@ import {
 import teacherService from 'services/teacher/teacher.service';
 import authService from 'services/auth/auth.service';
 import supervisionRequestService from 'services/supervisionRequest/supervisionRequest.service';
+import {TeacherUser} from '@interfaces/namedUser.interface';
+import Excel from 'exceljs';
 
 const createSupervisor = catchError(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -68,7 +70,7 @@ const changeSupervisorMaxLoad = catchError(
     );
 
     res.status(200).json({
-      status: 'succes',
+      status: 'success',
       data: {
         updatedSupervisor
       }
@@ -124,10 +126,39 @@ const getSupervisorsSupervisionRequests = catchError(
   }
 );
 
+const getSupervisorsPasswords = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const supervisorsWithPasswords = await supervisorService.getSupervisorsWithPasswords();
+    const formattedSupervisors: TeacherUser[] = supervisorsWithPasswords.map(supervisor => ({
+      fullName: `${supervisor.teacher.last_name} ${supervisor.teacher.first_name} ${supervisor.teacher.second_name}`,
+      login: supervisor.user.login,
+      password: supervisor.user.password_plain
+    }));
+
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet('Дані Керівників');
+
+    worksheet.columns = [
+      {header: 'ПІБ', key: 'fullName'},
+      {header: 'Логін', key: 'login'},
+      {header: 'Пароль', key: 'password'}
+    ];
+
+    formattedSupervisors.forEach(item => worksheet.addRow(item));
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats');
+    res.setHeader('Content-Disposition', 'attachment; filename="SupervisorLogins.xlsx"');
+
+    await workbook.xlsx.write(res);
+    res.end();
+  }
+);
+
 export {
   createSupervisor,
   changeSupervisorMaxLoad,
   getSupervisorsWithLoad,
   getSupervisorByUserId,
-  getSupervisorsSupervisionRequests
+  getSupervisorsSupervisionRequests,
+  getSupervisorsPasswords
 };

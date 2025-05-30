@@ -21,6 +21,10 @@ router
   );
 
 router
+  .route('/credentials')
+  .get(restrictToRoles([UserRole.admin]), supervisorController.getSupervisorsPasswords);
+
+router
   .route('/by-user-id/:userId')
   .get(restrictToPhases(), supervisorController.getSupervisorByUserId);
 

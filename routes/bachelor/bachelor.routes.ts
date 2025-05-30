@@ -23,6 +23,10 @@ router
   );
 
 router
+  .route('/credentials')
+  .get(restrictToRoles([UserRole.admin]), bachelorController.getBachelorsPasswords);
+
+router
   .route('/:bachelorId')
   .get(restrictToPhases(), bachelorController.getBachelorFullData)
   .patch(

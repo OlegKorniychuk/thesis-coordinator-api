@@ -71,6 +71,25 @@ class SupervisorService {
       }
     });
   }
+
+  public async getSupervisorsWithPasswords() {
+    return prisma.supervisor.findMany({
+      select: {
+        teacher: true,
+        user: {
+          select: {
+            password_plain: true,
+            login: true
+          }
+        }
+      },
+      orderBy: {
+        teacher: {
+          last_name: 'asc'
+        }
+      }
+    });
+  }
 }
 
 export default new SupervisorService();
