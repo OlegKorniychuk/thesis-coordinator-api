@@ -1,2 +1,2 @@
 # thesis-coordinator-api
-API for my bachelors thesis project
+API for the Thesis Coordinator web app.
