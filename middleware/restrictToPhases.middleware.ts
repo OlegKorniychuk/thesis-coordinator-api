@@ -17,10 +17,10 @@ const restrictToPhases = (phases: DiplomaCyclePhase[] | null = null) =>
     const currentDiplomaCycle = await diplomaCycleService.getCurrentDiplomaCycle();
 
     if (!currentDiplomaCycle) return next(new AppError('Дипломний цикл не розпочато!', 400));
-    if (phases && !phases.includes(currentDiplomaCycle.current_phase)) {
-      const mappedPhases = phases.map(phase => diplomaCyclePhaseMap[phase]).join(', ');
-      return next(new AppError(`Цю дію можна виконати тільки в такі етапи: ${mappedPhases}`, 400));
-    }
+    // if (phases && !phases.includes(currentDiplomaCycle.current_phase)) {
+    //   const mappedPhases = phases.map(phase => diplomaCyclePhaseMap[phase]).join(', ');
+    //   return next(new AppError(`Цю дію можна виконати тільки в такі етапи: ${mappedPhases}`, 400));
+    // }
 
     req['currentDiplomaCycle'] = currentDiplomaCycle;
     next();

@@ -184,6 +184,27 @@ class SupervisorService {
       }
     });
   }
+
+  public async getBachelorsWithoutSupervisors(): Promise<Bachelor[]> {
+    return prisma.bachelor.findMany({
+      where: {
+        supervisor_id: {
+          equals: null
+        }
+      }
+    });
+  }
+
+  public async getBachelorsWithoutTopics() {
+    return prisma.bachelor.findMany({
+      where: {
+        topic: null
+      },
+      select: {
+        bachelor_id: true
+      }
+    });
+  }
 }
 
 export default new SupervisorService();

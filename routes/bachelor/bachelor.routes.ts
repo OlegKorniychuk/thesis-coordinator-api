@@ -23,6 +23,10 @@ router
   );
 
 router
+  .route('/assign-topics')
+  .post(restrictToPhases(), restrictToRoles([UserRole.admin]), bachelorController.assignTopics);
+
+router
   .route('/credentials')
   .get(restrictToRoles([UserRole.admin]), bachelorController.getBachelorsPasswords);
 

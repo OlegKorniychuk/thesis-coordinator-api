@@ -1,5 +1,5 @@
 import {IBachelorFullData} from '@interfaces/bachelorFullData.interface';
-import {DiplomaCycle, UserRole} from '@prisma/client';
+import {DiplomaCycle, Topic, TopicStatus, UserRole} from '@prisma/client';
 import {AppError} from '@utils/appError';
 import {catchError} from '@utils/catchError';
 import {Request, Response, NextFunction} from 'express';
@@ -12,6 +12,7 @@ import {ValidateUpdateBachelor} from 'services/bachelor/bachelor.validate';
 import supervisorService from 'services/supervisor/supervisor.service';
 import {StudentUser} from '@interfaces/namedUser.interface';
 import Excel from 'exceljs';
+import topicService from 'services/topic/topic.service';
 
 const createBachelor = catchError(async (req: Request, res: Response, next: NextFunction) => {
   const studentData = ValidateCreateStudent.parse(req.body);
@@ -172,6 +173,37 @@ const getBachelorsPasswords = catchError(
   }
 );
 
+const assignTopics = catchError(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const bachelorsWithoutSupervisors = await bachelorService.getBachelorsWithoutSupervisors();
+
+    if (bachelorsWithoutSupervisors.length > 0)
+      return next(
+        new AppError(
+          `Неможливо призначити теми - є ${bachelorsWithoutSupervisors.length} студентів без керівників`,
+          400
+        )
+      );
+
+    const bachelorsWithoutTopics: {bachelor_id: string}[] =
+      await bachelorService.getBachelorsWithoutTopics();
+    const newTopics = bachelorsWithoutTopics.map(bachelor => ({
+      bachelor_id: bachelor.bachelor_id,
+      name: 'Призначена тема',
+      status: TopicStatus.on_confirmation
+    }));
+    const createdTopics = await topicService.assignManyTopics(newTopics);
+    await topicService.approveAllTopics();
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        count: createdTopics.count
+      }
+    });
+  }
+);
+
 export {
   createBachelor,
   getBachelorFullData,
@@ -179,5 +211,6 @@ export {
   updateBachelor,
   getBachelorByUserId,
   getBachelorsOfSupervisor,
-  getBachelorsPasswords
+  getBachelorsPasswords,
+  assignTopics
 };

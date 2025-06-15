@@ -90,6 +90,26 @@ class TopicService {
       }
     });
   }
+
+  public async assignManyTopics(topics: Prisma.TopicCreateManyInput[]) {
+    return prisma.topic.createMany({
+      data: topics,
+      skipDuplicates: true
+    });
+  }
+
+  public approveAllTopics() {
+    return prisma.topic.updateMany({
+      where: {
+        status: {
+          notIn: [TopicStatus.confirmed, TopicStatus.on_confirmation]
+        }
+      },
+      data: {
+        status: TopicStatus.on_confirmation
+      }
+    });
+  }
 }
 
 export default new TopicService();
